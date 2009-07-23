@@ -1,6 +1,7 @@
 #include "wx/wxprec.h"
 
 #include "wx/filename.h"
+#include "wx/dcbuffer.h"
 
 #ifndef WX_PRECOMP
 #	include "wx/wx.h"
@@ -32,6 +33,16 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	show_background = true;
 	show_tiles = true;
 	show_props = true;
+
+	tile_selected = -1;
+}
+
+MainFrame::~MainFrame() {
+	if(level != 0) delete level;
+
+	if(background != 0) delete background;
+	if(tiles != 0) delete tiles;
+	if(props != 0) delete props;
 }
 
 void MainFrame::InitializeComponents()
@@ -40,7 +51,7 @@ void MainFrame::InitializeComponents()
 	SetBackgroundColour(wxColour(0xeeeeee));
 	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 
-	toolbar = new wxPanel(this, wxID_ANY, wxPoint(0, 0), wxSize(640, 30));
+	toolbar = new wxPanel(this, wxID_ANY, wxPoint(0, 0), wxSize(840, 30));
 
 	btnOpen = new wxButton(toolbar, ID_Open, _("&Open"), wxPoint(0, 0), wxSize(80, 30));
 	btnClose = new wxButton(toolbar, ID_Close, _("&Close"), wxPoint(80, 0), wxSize(80, 30));
@@ -54,6 +65,10 @@ void MainFrame::InitializeComponents()
 
 	display = new wxPanel(this, wxID_ANY, wxPoint(0, 30), wxSize(640, 480));
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
+	display->Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler(MainFrame::OnDisplayErase));
+	display->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MainFrame::OnDisplayMouseDown));
+
+	tilepanel = new TilePanel(this, wxID_ANY, wxPoint(640, 30), wxSize(200, 480));
 }
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -71,11 +86,38 @@ void MainFrame::OnExit(wxCommandEvent &event)
 	Close(TRUE);
 }
 
-void MainFrame::OnDisplayPaint(wxPaintEvent& event) {
+void MainFrame::OnDisplayMouseDown(wxMouseEvent &event) {
+	int x, y, sel;
 	MainFrame * f;
 	f = MainFrame::instance;
 
-	wxPaintDC dc(this);
+	f->tilepanel->saveTile();
+
+	x = (event.GetX() / TILE_W);
+	y = (event.GetY() / TILE_H);
+	
+	sel = (y * TILE_COLS) + x;
+
+	if(f->tile_selected == sel) {
+		f->tile_selected = -1;
+	} else {
+		f->tile_selected = sel;
+	}
+
+	f->tilepanel->setTile(sel);
+
+	f->display->Refresh();
+}
+
+
+void MainFrame::OnDisplayErase(wxEraseEvent &event) {
+}
+
+void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
+	MainFrame * f;
+	f = MainFrame::instance;
+
+	wxBufferedPaintDC dc(this);
 
 	wxBrush br(f->bg_color);
 	dc.SetBackground(br);
@@ -143,6 +185,7 @@ void MainFrame::OnDisplayPaint(wxPaintEvent& event) {
 			tile = f->tiles->GetSubBitmap(rect);
 
 			dc.DrawBitmap(tile, p, true);
+
 		}
 	}
 
@@ -153,6 +196,19 @@ void MainFrame::OnDisplayPaint(wxPaintEvent& event) {
 	}
 	for(int x = 0; x < 640; x += TILE_W) {
 		dc.DrawLine(x, 0, x, 480);
+	}
+
+	// Draw selected tile
+	if(f->tile_selected != -1) {
+		wxRect r;
+		r.x = 1 + (f->tile_selected % TILE_COLS) * TILE_W;
+		r.y = 1 + (f->tile_selected / TILE_COLS) * TILE_H;
+		r.width = TILE_W;
+		r.height = TILE_H;
+
+		dc.SetPen(wxPen(wxColor(0x88, 0x88, 0xff), 2));
+		dc.SetBrush(*wxTRANSPARENT_BRUSH);
+		dc.DrawRectangle(r);
 	}
 }
 
@@ -221,8 +277,13 @@ void MainFrame::OnOpen(wxCommandEvent &event)
 		mask_props = new wxMask(*props, mask_colour);
 		props->SetMask(mask_props);
 
+		tilepanel->setLevel(level, tiles);
+		tilepanel->setTile(-1);
+
 		display->Refresh();
 	}
+
+	delete dialog;
 }
 
 void MainFrame::OnClose(wxCommandEvent &event)

@@ -190,6 +190,14 @@
 				RelativePath=".\MainFrame.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TilePanel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TileSelector.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -206,6 +214,14 @@
 			</File>
 			<File
 				RelativePath=".\MainFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TilePanel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TileSelector.h"
 				>
 			</File>
 		</Filter>

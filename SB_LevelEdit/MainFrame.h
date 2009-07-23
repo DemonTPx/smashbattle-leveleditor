@@ -1,20 +1,27 @@
 #pragma once
 
 #include "Level.h"
+#include "TilePanel.h"
 #include "wx/tglbtn.h"
 
 class MainFrame : public wxFrame
 {
 public:
 	MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
+	~MainFrame();
 	
 	void InitializeComponents();
 
 protected:
+	static MainFrame * instance;
+
 	void OnExit(wxCommandEvent &event);
 	void OnOpen(wxCommandEvent &event);
 	void OnClose(wxCommandEvent &event);
-    void OnDisplayPaint(wxPaintEvent& event);
+
+    void OnDisplayPaint(wxPaintEvent &event);
+	void OnDisplayErase(wxEraseEvent &event);
+	void OnDisplayMouseDown(wxMouseEvent &event);
 	
 	void OnToggleBackground(wxCommandEvent &event);
 	void OnToggleTiles(wxCommandEvent &event);
@@ -31,8 +38,7 @@ protected:
 
 	wxPanel * toolbar;
 	wxPanel * display;
-
-	static MainFrame * instance;
+	TilePanel * tilepanel;
 
 	Level * level;
 
@@ -46,6 +52,8 @@ protected:
 
 	wxBitmap * props;
 	wxMask * mask_props;
+
+	int tile_selected;
 
 	bool show_background;
 	bool show_tiles;

@@ -7,7 +7,9 @@ Level::Level() {
 }
 
 Level::~Level() {
-	props->clear();
+	for(unsigned int i = 0; i < props->size(); i++) {
+		delete props->at(i);
+	}
 	delete props;
 }
 

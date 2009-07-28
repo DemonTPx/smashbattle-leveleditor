@@ -4,6 +4,10 @@
 Level::Level() {
 	props = new std::vector<LEVEL_PROP*>(0);
 	loaded = false;
+
+	for(int i = 0; i < 4; i++) {
+		playerstart[i].player = 0xffff;
+	}
 }
 
 Level::~Level() {

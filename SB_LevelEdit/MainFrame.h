@@ -26,6 +26,7 @@ protected:
 	void OnToggleBackground(wxCommandEvent &event);
 	void OnToggleTiles(wxCommandEvent &event);
 	void OnToggleProps(wxCommandEvent &event);
+	void OnTogglePStarts(wxCommandEvent &event);
 
 	DECLARE_EVENT_TABLE()
 
@@ -35,6 +36,7 @@ protected:
 	wxToggleButton * btnBackground;
 	wxToggleButton * btnTiles;
 	wxToggleButton * btnProps;
+	wxToggleButton * btnPStarts;
 
 	wxPanel * toolbar;
 	wxPanel * display;
@@ -53,11 +55,15 @@ protected:
 	wxBitmap * props;
 	wxMask * mask_props;
 
+	wxBitmap * pstarts;
+
 	int tile_selected;
 
+	bool show_grid;
 	bool show_background;
 	bool show_tiles;
 	bool show_props;
+	bool show_pstarts;
 };
 
 enum {
@@ -68,4 +74,5 @@ enum {
 	ID_ToggleBackground,
 	ID_ToggleTiles,
 	ID_ToggleProps,
+	ID_TogglePStarts,
 };

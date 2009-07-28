@@ -15,6 +15,9 @@
 #define TILE_ROWS 15
 #define TILE_COUNT (TILE_COLS * TILE_ROWS)
 
+#define PLAYER_W 22
+#define PLAYER_H 44
+
 MainFrame * MainFrame::instance = 0;
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size) : wxFrame((wxFrame *) NULL, -1, title, pos, size) 
@@ -30,9 +33,11 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	tiles = 0;
 	props = 0;
 
+	show_grid = false;
 	show_background = true;
 	show_tiles = true;
 	show_props = true;
+	show_pstarts = false;
 
 	tile_selected = -1;
 }
@@ -62,6 +67,7 @@ void MainFrame::InitializeComponents()
 	btnTiles->SetValue(true);
 	btnProps = new wxToggleButton(toolbar, ID_ToggleProps, _("&Props"), wxPoint(360, 0), wxSize(80, 30));
 	btnProps->SetValue(true);
+	btnPStarts = new wxToggleButton(toolbar, ID_TogglePStarts, _("Player &starts"), wxPoint(440, 0), wxSize(80, 30));
 
 	display = new wxPanel(this, wxID_ANY, wxPoint(0, 30), wxSize(640, 480));
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
@@ -69,6 +75,8 @@ void MainFrame::InitializeComponents()
 	display->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MainFrame::OnDisplayMouseDown));
 
 	tilepanel = new TilePanel(this, wxID_ANY, wxPoint(640, 30), wxSize(200, 480));
+
+	pstarts = new wxBitmap(_("pstarts.bmp"), wxBITMAP_TYPE_BMP);
 }
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -79,6 +87,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_TOGGLEBUTTON(ID_ToggleBackground, MainFrame::OnToggleBackground)
 	EVT_TOGGLEBUTTON(ID_ToggleTiles, MainFrame::OnToggleTiles)
 	EVT_TOGGLEBUTTON(ID_ToggleProps, MainFrame::OnToggleProps)
+	EVT_TOGGLEBUTTON(ID_TogglePStarts, MainFrame::OnTogglePStarts)
 END_EVENT_TABLE()
 
 void MainFrame::OnExit(wxCommandEvent &event)
@@ -177,10 +186,12 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 			rect.width = TILE_W;
 			rect.height = TILE_H;
 
-			if(ti->hp < 40)
-				rect.y += TILE_H;
-			if(ti->hp < 20)
-				rect.y += TILE_H;
+			if(!ti->indestructible) {
+				if(ti->hp < 40)
+					rect.y += TILE_H;
+				if(ti->hp < 20)
+					rect.y += TILE_H;
+			}
 
 			tile = f->tiles->GetSubBitmap(rect);
 
@@ -190,12 +201,14 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 	}
 
 	// Grid
-	dc.SetPen(* wxGREY_PEN);
-	for(int y = 0; y < 480; y += TILE_H) {
-		dc.DrawLine(0, y, 640, y);
-	}
-	for(int x = 0; x < 640; x += TILE_W) {
-		dc.DrawLine(x, 0, x, 480);
+	if(f->show_grid) {
+		dc.SetPen(* wxGREY_PEN);
+		for(int y = 0; y < 480; y += TILE_H) {
+			dc.DrawLine(0, y, 640, y);
+		}
+		for(int x = 0; x < 640; x += TILE_W) {
+			dc.DrawLine(x, 0, x, 480);
+		}
 	}
 
 	// Draw selected tile
@@ -210,12 +223,44 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 		dc.SetBrush(*wxTRANSPARENT_BRUSH);
 		dc.DrawRectangle(r);
 	}
+
+	if(f->show_pstarts) {
+		for(int i = 0; i < 4; i++) {
+			if(f->level->playerstart[i].player != 0xffff) {
+				wxRect r;
+				wxBitmap sub;
+				wxPoint p;
+
+				r.x = PLAYER_W * f->level->playerstart[i].player;
+				r.y = f->level->playerstart[i].facing_right ? 0 : PLAYER_H;
+				r.width = PLAYER_W;
+				r.height = PLAYER_H;
+
+				sub = f->pstarts->GetSubBitmap(r);
+
+				p.x = (f->level->playerstart[i].x * TILE_W) + ((TILE_W - PLAYER_W) / 2);
+				p.y = (f->level->playerstart[i].y * TILE_H) - PLAYER_H;
+
+				dc.DrawBitmap(sub, p);
+			}
+		}
+	}
 }
 
 void MainFrame::OnOpen(wxCommandEvent &event)
 {
 	wxFileDialog * dialog;
 	wxString wildcard = _("Level files (*.lvl)|*.lvl|All files (*.*)|*.*");
+	int result;
+
+	if(level != NULL) {
+		result = wxMessageBox(_("Do you want to save the current level?"), _("Open level"), wxYES_NO | wxCANCEL | wxICON_QUESTION, this);
+		if(result == wxCANCEL)
+			return;
+		if(result == wxYES) {
+			// Save
+		}
+	}
 	
 	dialog = new wxFileDialog(this, _("Select level"), wxEmptyString,
 		wxEmptyString, wildcard, wxFD_OPEN);
@@ -319,3 +364,9 @@ void MainFrame::OnToggleProps(wxCommandEvent &event) {
 	MainFrame::instance->show_props = event.IsChecked();
 	MainFrame::instance->display->Refresh();
 }
+
+void MainFrame::OnTogglePStarts(wxCommandEvent &event) {
+	MainFrame::instance->show_pstarts = event.IsChecked();
+	MainFrame::instance->display->Refresh();
+}
+

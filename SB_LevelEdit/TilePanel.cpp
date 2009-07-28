@@ -51,9 +51,11 @@ void TilePanel::setTile(int t) {
 		chkBouncable->Enable(true);
 		chkShowInPreview->Enable(true);
 		
-		sliderHP->SetValue(level->tile[t].hp);
+		tileSelector->SetSelected(level->tile[t].tile);
 		if(level->tile[t].indestructible)
 			sliderHP->SetValue(-1);
+		else
+			sliderHP->SetValue(level->tile[t].hp);
 
 		chkBouncable->SetValue(level->tile[t].bouncing);
 		chkShowInPreview->SetValue(level->tile[t].show_in_preview);
@@ -62,7 +64,11 @@ void TilePanel::setTile(int t) {
 }
 
 void TilePanel::saveTile() {
-	return;
+	if(tileSelector->GetSelected() == -1) {
+		level->tile[tile].tile = 0xffff;
+	} else {
+		level->tile[tile].tile = tileSelector->GetSelected();
+	}
 	if(sliderHP->GetValue() == -1) {
 		level->tile[tile].hp = 0xffff;
 		level->tile[tile].indestructible = true;

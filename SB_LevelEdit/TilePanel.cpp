@@ -4,6 +4,7 @@
 #	include "wx/wx.h"
 #endif
 
+#include "MainFrame.h"
 #include "TilePanel.h"
 
 TilePanel * TilePanel::instance = 0;
@@ -15,6 +16,8 @@ TilePanel::TilePanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, const 
 
 	level = 0;
 	setTile(-1);
+
+	memset(&copy, 0, sizeof(LEVEL_TILE));
 }
 
 void TilePanel::InitializeComponents() {
@@ -26,10 +29,19 @@ void TilePanel::InitializeComponents() {
 
 	chkBouncable = new wxCheckBox(this, ID_chkBouncable, _("Bouncable"), wxPoint(5, 245), wxSize(190, 20));
 	chkShowInPreview = new wxCheckBox(this, ID_chkShowInPreview, _("Show in preview"), wxPoint(5, 265), wxSize(190, 20));
-	
+
+	btnCopy = new wxButton(this, ID_btnCopy, _("&Copy"), wxPoint(5, 290), wxSize(90, 30));
+	btnCopy->Disable();
+
+	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"), wxPoint(100, 290), wxSize(90, 30));
+	btnPaste->Disable();
 }
 
 BEGIN_EVENT_TABLE(TilePanel, wxPanel)
+	EVT_CHECKBOX(ID_chkBouncable, TilePanel::OnChkBouncable)
+	EVT_CHECKBOX(ID_chkShowInPreview, TilePanel::OnChkShowInPreview)
+	EVT_BUTTON(ID_btnCopy, TilePanel::OnBtnCopy)
+	EVT_BUTTON(ID_btnPaste, TilePanel::OnBtnPaste)
 END_EVENT_TABLE()
 
 void TilePanel::setLevel(Level * l, wxBitmap * tiles) {
@@ -41,15 +53,17 @@ void TilePanel::setLevel(Level * l, wxBitmap * tiles) {
 void TilePanel::setTile(int t) {
 	tile = t;
 	if(t == -1 || level == 0) {
-		sliderHP->Enable(false);
+		sliderHP->Disable();
 
-		chkBouncable->Enable(false);
-		chkShowInPreview->Enable(false);
+		chkBouncable->Disable();
+		chkShowInPreview->Disable();
+
+		btnCopy->Disable();
 	} else {
-		sliderHP->Enable(true);
+		sliderHP->Enable();
 
-		chkBouncable->Enable(true);
-		chkShowInPreview->Enable(true);
+		chkBouncable->Enable();
+		chkShowInPreview->Enable();
 		
 		tileSelector->SetSelected(level->tile[t].tile);
 		if(level->tile[t].indestructible)
@@ -60,10 +74,15 @@ void TilePanel::setTile(int t) {
 		chkBouncable->SetValue(level->tile[t].bouncing);
 		chkShowInPreview->SetValue(level->tile[t].show_in_preview);
 		UpdateLabels();
+		
+		btnCopy->Enable();
 	}
 }
 
 void TilePanel::saveTile() {
+	if(level == 0)
+		return;
+
 	if(tileSelector->GetSelected() == -1) {
 		level->tile[tile].tile = 0xffff;
 	} else {
@@ -78,10 +97,34 @@ void TilePanel::saveTile() {
 	}
 	level->tile[tile].bouncing = chkBouncable->GetValue();
 	level->tile[tile].show_in_preview = chkShowInPreview->GetValue();
+
+	MainFrame::instance->level_modified = true;
 }
 
 void TilePanel::OnSliderHP(wxScrollEvent &event) {
 	UpdateLabels();
+	instance->saveTile();
+	MainFrame::instance->Refresh();
+}
+
+void TilePanel::OnChkBouncable(wxCommandEvent &event) {
+	instance->saveTile();
+}
+
+void TilePanel::OnChkShowInPreview(wxCommandEvent &event) {
+	instance->saveTile();
+}
+
+void TilePanel::OnBtnCopy(wxCommandEvent &event) {
+	memcpy(&instance->copy, &level->tile[instance->tile], sizeof(LEVEL_TILE));
+	btnPaste->Enable();
+}
+
+void TilePanel::OnBtnPaste(wxCommandEvent &event) {
+	memcpy(&level->tile[instance->tile], &instance->copy, sizeof(LEVEL_TILE));
+	setTile(tile);
+	instance->saveTile();
+	MainFrame::instance->Refresh();
 }
 
 void TilePanel::UpdateLabels() {
@@ -98,10 +141,4 @@ void TilePanel::UpdateLabels() {
 	label << _(")");
 
 	t->lblHP->SetLabel(label);
-}
-
-void TilePanel::OnSave(wxCommandEvent &event) {
-}
-
-void TilePanel::OnCancel(wxCommandEvent &event) {
 }

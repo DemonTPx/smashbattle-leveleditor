@@ -10,13 +10,18 @@ public:
 	MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 	~MainFrame();
 	
+	static MainFrame * instance;
+	
+	bool level_modified;
+	
 	void InitializeComponents();
 
 protected:
-	static MainFrame * instance;
+	void OnExit(wxCloseEvent &event);
 
-	void OnExit(wxCommandEvent &event);
+	void OnNew(wxCommandEvent &event);
 	void OnOpen(wxCommandEvent &event);
+	void OnSave(wxCommandEvent &event);
 	void OnClose(wxCommandEvent &event);
 
     void OnDisplayPaint(wxPaintEvent &event);
@@ -28,9 +33,17 @@ protected:
 	void OnToggleProps(wxCommandEvent &event);
 	void OnTogglePStarts(wxCommandEvent &event);
 
+	void LevelNew();
+	void LevelOpen();
+	void LevelSave();
+	void LevelClose();
+	bool LevelPromptClose();
+
 	DECLARE_EVENT_TABLE()
 
+	wxButton * btnNew;
 	wxButton * btnOpen;
+	wxButton * btnSave;
 	wxButton * btnClose;
 
 	wxToggleButton * btnBackground;
@@ -43,6 +56,7 @@ protected:
 	TilePanel * tilepanel;
 
 	Level * level;
+	wxString level_filename;
 
 	wxColour bg_color;
 

@@ -25,7 +25,10 @@ TileSelector::TileSelector(wxWindow* parent, wxWindowID id, const wxPoint& pos, 
 
 void TileSelector::setTiles(wxBitmap * t) {
 	tiles = t;
-	tiles_max = t->GetWidth() / TILE_W;
+	if(t == 0)
+		tiles_max = 0;
+	else
+		tiles_max = t->GetWidth() / TILE_W;
 
 	Refresh();
 }
@@ -105,5 +108,8 @@ void TileSelector::OnClick(wxMouseEvent &event) {
 		}
 	}
 
+	TilePanel::instance->saveTile();
+
+	MainFrame::instance->Refresh();
 	Refresh();
 }

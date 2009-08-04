@@ -26,6 +26,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	InitializeComponents();
 
 	level = 0;
+	level_filename = wxEmptyString;
+	level_modified = false;
 
 	bg_color = wxColour(0, 0, 0);
 
@@ -48,6 +50,8 @@ MainFrame::~MainFrame() {
 	if(background != 0) delete background;
 	if(tiles != 0) delete tiles;
 	if(props != 0) delete props;
+	
+	if(pstarts != 0) delete pstarts;
 }
 
 void MainFrame::InitializeComponents()
@@ -58,16 +62,18 @@ void MainFrame::InitializeComponents()
 
 	toolbar = new wxPanel(this, wxID_ANY, wxPoint(0, 0), wxSize(840, 30));
 
-	btnOpen = new wxButton(toolbar, ID_Open, _("&Open"), wxPoint(0, 0), wxSize(80, 30));
-	btnClose = new wxButton(toolbar, ID_Close, _("&Close"), wxPoint(80, 0), wxSize(80, 30));
+	btnNew = new wxButton(toolbar, ID_New, _("&New"), wxPoint(0, 0), wxSize(80, 30));
+	btnOpen = new wxButton(toolbar, ID_Open, _("&Open"), wxPoint(80, 0), wxSize(80, 30));
+	btnSave = new wxButton(toolbar, ID_Save, _("&Save"), wxPoint(160, 0), wxSize(80, 30));
+	btnClose = new wxButton(toolbar, ID_Close, _("&Close"), wxPoint(240, 0), wxSize(80, 30));
 
-	btnBackground = new wxToggleButton(toolbar, ID_ToggleBackground, _("&Background"), wxPoint(200, 0), wxSize(80, 30));
+	btnBackground = new wxToggleButton(toolbar, ID_ToggleBackground, _("&Background"), wxPoint(400, 0), wxSize(80, 30));
 	btnBackground->SetValue(true);
-	btnTiles = new wxToggleButton(toolbar, ID_ToggleTiles, _("&Tiles"), wxPoint(280, 0), wxSize(80, 30));
+	btnTiles = new wxToggleButton(toolbar, ID_ToggleTiles, _("&Tiles"), wxPoint(480, 0), wxSize(80, 30));
 	btnTiles->SetValue(true);
-	btnProps = new wxToggleButton(toolbar, ID_ToggleProps, _("&Props"), wxPoint(360, 0), wxSize(80, 30));
+	btnProps = new wxToggleButton(toolbar, ID_ToggleProps, _("&Props"), wxPoint(560, 0), wxSize(80, 30));
 	btnProps->SetValue(true);
-	btnPStarts = new wxToggleButton(toolbar, ID_TogglePStarts, _("Player &starts"), wxPoint(440, 0), wxSize(80, 30));
+	btnPStarts = new wxToggleButton(toolbar, ID_TogglePStarts, _("Player &starts"), wxPoint(640, 0), wxSize(80, 30));
 
 	display = new wxPanel(this, wxID_ANY, wxPoint(0, 30), wxSize(640, 480));
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
@@ -80,27 +86,30 @@ void MainFrame::InitializeComponents()
 }
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
-//	EVT_BUTTON(BUTTON_btn, MainFrame::OnExit)
-//	EVT_BUTTON(BUTTON_btn, MainFrame::OnExit)
+	EVT_BUTTON(ID_New, MainFrame::OnNew)
 	EVT_BUTTON(ID_Open, MainFrame::OnOpen)
+	EVT_BUTTON(ID_Save, MainFrame::OnSave)
 	EVT_BUTTON(ID_Close, MainFrame::OnClose)
 	EVT_TOGGLEBUTTON(ID_ToggleBackground, MainFrame::OnToggleBackground)
 	EVT_TOGGLEBUTTON(ID_ToggleTiles, MainFrame::OnToggleTiles)
 	EVT_TOGGLEBUTTON(ID_ToggleProps, MainFrame::OnToggleProps)
 	EVT_TOGGLEBUTTON(ID_TogglePStarts, MainFrame::OnTogglePStarts)
+	EVT_CLOSE(MainFrame::OnExit)
 END_EVENT_TABLE()
 
-void MainFrame::OnExit(wxCommandEvent &event)
+void MainFrame::OnExit(wxCloseEvent &event)
 {
-	Close(TRUE);
+	if(instance->LevelPromptClose()) {
+		Destroy();
+	} else {
+		event.Skip(false);
+	}
 }
 
 void MainFrame::OnDisplayMouseDown(wxMouseEvent &event) {
 	int x, y, sel;
 	MainFrame * f;
 	f = MainFrame::instance;
-
-	f->tilepanel->saveTile();
 
 	x = (event.GetX() / TILE_W);
 	y = (event.GetY() / TILE_H);
@@ -247,32 +256,56 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 	}
 }
 
+void MainFrame::OnNew(wxCommandEvent &event)
+{
+	if(LevelPromptClose()) {
+		LevelNew();
+	}
+}
+
 void MainFrame::OnOpen(wxCommandEvent &event)
 {
+	if(LevelPromptClose()) {
+		LevelOpen();
+	}
+}
+
+void MainFrame::OnSave(wxCommandEvent &event)
+{
+	LevelSave();
+}
+
+void MainFrame::OnClose(wxCommandEvent &event)
+{
+	if(LevelPromptClose()) {
+		LevelClose();
+	}
+}
+
+void MainFrame::LevelNew() {
+	wxMessageBox(_("Not available yet"), _("New level"), wxICON_ERROR);
+	btnNew->Disable();
+	return;
+	LevelClose();
+	level_modified = false;
+}
+
+void MainFrame::LevelOpen() {
 	wxFileDialog * dialog;
 	wxString wildcard = _("Level files (*.lvl)|*.lvl|All files (*.*)|*.*");
-	int result;
-
-	if(level != NULL) {
-		result = wxMessageBox(_("Do you want to save the current level?"), _("Open level"), wxYES_NO | wxCANCEL | wxICON_QUESTION, this);
-		if(result == wxCANCEL)
-			return;
-		if(result == wxYES) {
-			// Save
-		}
-	}
 	
 	dialog = new wxFileDialog(this, _("Select level"), wxEmptyString,
 		wxEmptyString, wildcard, wxFD_OPEN);
 	if(dialog->ShowModal() == wxID_OK) {
-		OnClose(event);
+		LevelClose();
 
 		level = new Level();
 		level->load(dialog->GetPath().ToAscii());
+		level_filename = dialog->GetPath();
 		
 		wxString title;
 
-		title = _("Smash Battle level editor [");
+		title = _("Smash Battle - level editor [");
 		title.Append(wxString::FromAscii(level->header.name)).Append(_("]"));
 
 		this->SetTitle(title);
@@ -325,14 +358,42 @@ void MainFrame::OnOpen(wxCommandEvent &event)
 		tilepanel->setLevel(level, tiles);
 		tilepanel->setTile(-1);
 
+		tile_selected = -1;
+		
+		level_modified = false;
+
 		display->Refresh();
 	}
 
 	delete dialog;
 }
 
-void MainFrame::OnClose(wxCommandEvent &event)
-{
+bool MainFrame::LevelPromptClose() {
+	int result;
+
+	if(level == NULL)
+		return true;
+	
+	if(!level_modified)
+		return true;
+
+	result = wxMessageBox(_("Do you want to save the current level?"), _("Open level"), wxYES_NO | wxCANCEL | wxICON_QUESTION, this);
+	if(result == wxCANCEL)
+		return false;
+	if(result == wxYES)
+		LevelSave();
+
+	return true;
+}
+
+void MainFrame::LevelClose() {
+	this->SetTitle(_("Smash Battle - level editor"));
+
+	level_filename = wxEmptyString;
+
+	tilepanel->setLevel(0, 0);
+	tilepanel->setTile(-1);
+
 	delete level;
 	level = 0;
 
@@ -348,6 +409,14 @@ void MainFrame::OnClose(wxCommandEvent &event)
 	props = 0;
 
 	display->Refresh();
+}
+
+void MainFrame::LevelSave() {
+	if(level == 0)
+		return;
+
+	level->save(level_filename.ToAscii());
+	level_modified = false;
 }
 
 void MainFrame::OnToggleBackground(wxCommandEvent &event) {

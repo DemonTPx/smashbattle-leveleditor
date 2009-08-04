@@ -8,16 +8,18 @@ class TilePanel : public wxPanel {
 public:
 	TilePanel(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTAB_TRAVERSAL, const wxString& name = _("panel"));
 
+	static TilePanel * instance;
+
 	void InitializeComponents();
 
 	void setLevel(Level * l, wxBitmap * tiles);
 	void setTile(int t);
 	void saveTile();
 protected:
-	static TilePanel * instance;
-
 	Level * level;
 	int tile;
+
+	LEVEL_TILE copy;
 
 	DECLARE_EVENT_TABLE()
 
@@ -29,8 +31,8 @@ protected:
 	wxCheckBox * chkBouncable;
 	wxCheckBox * chkShowInPreview;
 
-	wxButton * btnSave;
-	wxButton * btnCancel;
+	wxButton * btnCopy;
+	wxButton * btnPaste;
 
 	void OnSliderHP(wxScrollEvent &event);
 
@@ -39,8 +41,8 @@ protected:
 	void OnChkBouncable(wxCommandEvent &event);
 	void OnChkShowInPreview(wxCommandEvent &event);
 
-	void OnSave(wxCommandEvent &event);
-	void OnCancel(wxCommandEvent &event);
+	void OnBtnCopy(wxCommandEvent &event);
+	void OnBtnPaste(wxCommandEvent &event);
 };
 
 enum {
@@ -48,6 +50,6 @@ enum {
 	ID_sliderHP,
 	ID_chkBouncable,
 	ID_chkShowInPreview,
-	ID_TileSave,
-	ID_TileCancel
+	ID_btnCopy,
+	ID_btnPaste
 };

@@ -17,6 +17,16 @@ Level::~Level() {
 	delete props;
 }
 
+void Level::create(const char * filename, LEVEL_HEADER &hdr) {
+	memcpy(&header, &hdr, sizeof(LEVEL_HEADER));
+
+	memset(&tile, -1, sizeof(tile));
+
+	save(filename);
+
+	loaded = true;
+}
+
 void Level::load(const char * filename) {
 	gzFile file;
 	LEVEL_PLAYERSTART pstart;

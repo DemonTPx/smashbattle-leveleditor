@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LevelSettingsDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MainFrame.cpp"
 				>
 			</File>
@@ -210,6 +214,10 @@
 			</File>
 			<File
 				RelativePath=".\Level.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LevelSettingsDialog.h"
 				>
 			</File>
 			<File

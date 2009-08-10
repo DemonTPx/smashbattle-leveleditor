@@ -4,8 +4,7 @@
 #include "TilePanel.h"
 #include "wx/tglbtn.h"
 
-class MainFrame : public wxFrame
-{
+class MainFrame : public wxFrame {
 public:
 	MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
 	~MainFrame();
@@ -22,7 +21,7 @@ protected:
 	void OnNew(wxCommandEvent &event);
 	void OnOpen(wxCommandEvent &event);
 	void OnSave(wxCommandEvent &event);
-	void OnClose(wxCommandEvent &event);
+	void OnOptions(wxCommandEvent &event);
 
     void OnDisplayPaint(wxPaintEvent &event);
 	void OnDisplayErase(wxEraseEvent &event);
@@ -37,6 +36,8 @@ protected:
 	void LevelOpen();
 	void LevelSave();
 	void LevelClose();
+	void LevelOptions();
+	void LevelLoadBitmaps();
 	bool LevelPromptClose();
 
 	DECLARE_EVENT_TABLE()
@@ -44,7 +45,7 @@ protected:
 	wxButton * btnNew;
 	wxButton * btnOpen;
 	wxButton * btnSave;
-	wxButton * btnClose;
+	wxButton * btnOptions;
 
 	wxToggleButton * btnBackground;
 	wxToggleButton * btnTiles;
@@ -84,7 +85,7 @@ enum {
 	ID_New = 1,
 	ID_Open,
 	ID_Save,
-	ID_Close,
+	ID_Options,
 	ID_ToggleBackground,
 	ID_ToggleTiles,
 	ID_ToggleProps,

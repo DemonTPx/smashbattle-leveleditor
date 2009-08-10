@@ -68,11 +68,11 @@ public:
 	Level();
 	~Level();
 
+	void create(const char * filename, LEVEL_HEADER &hdr);
 	void load(const char * filename);
 	void save(const char * filename);
 
 	bool loaded;
-	char * filename;
 
 	LEVEL_HEADER header;
 	LEVEL_TILE tile[TILE_COUNT];

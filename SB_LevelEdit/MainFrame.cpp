@@ -7,6 +7,8 @@
 #	include "wx/wx.h"
 #endif
 
+#include "LevelSettingsDialog.h"
+
 #include "MainFrame.h"
 
 #define TILE_W 32
@@ -65,7 +67,7 @@ void MainFrame::InitializeComponents()
 	btnNew = new wxButton(toolbar, ID_New, _("&New"), wxPoint(0, 0), wxSize(80, 30));
 	btnOpen = new wxButton(toolbar, ID_Open, _("&Open"), wxPoint(80, 0), wxSize(80, 30));
 	btnSave = new wxButton(toolbar, ID_Save, _("&Save"), wxPoint(160, 0), wxSize(80, 30));
-	btnClose = new wxButton(toolbar, ID_Close, _("&Close"), wxPoint(240, 0), wxSize(80, 30));
+	btnOptions = new wxButton(toolbar, ID_Options, _("&Options"), wxPoint(260, 0), wxSize(80, 30));
 
 	btnBackground = new wxToggleButton(toolbar, ID_ToggleBackground, _("&Background"), wxPoint(400, 0), wxSize(80, 30));
 	btnBackground->SetValue(true);
@@ -89,7 +91,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_BUTTON(ID_New, MainFrame::OnNew)
 	EVT_BUTTON(ID_Open, MainFrame::OnOpen)
 	EVT_BUTTON(ID_Save, MainFrame::OnSave)
-	EVT_BUTTON(ID_Close, MainFrame::OnClose)
+	EVT_BUTTON(ID_Options, MainFrame::OnOptions)
 	EVT_TOGGLEBUTTON(ID_ToggleBackground, MainFrame::OnToggleBackground)
 	EVT_TOGGLEBUTTON(ID_ToggleTiles, MainFrame::OnToggleTiles)
 	EVT_TOGGLEBUTTON(ID_ToggleProps, MainFrame::OnToggleProps)
@@ -275,88 +277,31 @@ void MainFrame::OnSave(wxCommandEvent &event)
 	LevelSave();
 }
 
-void MainFrame::OnClose(wxCommandEvent &event)
+void MainFrame::OnOptions(wxCommandEvent &event)
 {
-	if(LevelPromptClose()) {
-		LevelClose();
-	}
+	LevelOptions();
 }
 
 void MainFrame::LevelNew() {
-	wxMessageBox(_("Not available yet"), _("New level"), wxICON_ERROR);
-	btnNew->Disable();
-	return;
-	LevelClose();
-	level_modified = false;
-}
+	LevelSettingsDialog dialog(this, wxID_ANY);
+	LEVEL_HEADER hdr;
 
-void MainFrame::LevelOpen() {
-	wxFileDialog * dialog;
-	wxString wildcard = _("Level files (*.lvl)|*.lvl|All files (*.*)|*.*");
-	
-	dialog = new wxFileDialog(this, _("Select level"), wxEmptyString,
-		wxEmptyString, wildcard, wxFD_OPEN);
-	if(dialog->ShowModal() == wxID_OK) {
+	if(dialog.NewLevel() == wxID_OK) {
 		LevelClose();
 
 		level = new Level();
-		level->load(dialog->GetPath().ToAscii());
-		level_filename = dialog->GetPath();
 		
+		level_filename = dialog.filename;
+		dialog.GetHeader(hdr);
+		level->create(level_filename.ToAscii(), hdr);
 		wxString title;
 
 		title = _("Smash Battle - level editor [");
 		title.Append(wxString::FromAscii(level->header.name)).Append(_("]"));
 
 		this->SetTitle(title);
-		
-		bg_color = wxColour((unsigned long)level->header.background_color);
 
-		wxString path;
-		wxString bg_file_full;
-		wxString tiles_file_full;
-		wxString props_file_full;
-		wxColour mask_colour;
-		char sep;
-
-		mask_colour = wxColour(0, 0xff, 0xff);
-
-		sep = wxFileName::GetPathSeparator();
-
-		path = dialog->GetPath().BeforeLast(sep).BeforeLast(sep);
-		bg_file_full = _("");
-		bg_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
-		bg_file_full.Append(wxString::FromAscii(level->header.filename_background));
-
-		background = new wxBitmap();
-		if(!background->LoadFile(bg_file_full, wxBITMAP_TYPE_BMP)) {
-			// Error: bmp could not be loaded
-		}
-
-		tiles_file_full = _("");
-		tiles_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
-		tiles_file_full.Append(wxString::FromAscii(level->header.filename_tiles));
-		
-		tiles = new wxBitmap();
-		if(!tiles->LoadFile(tiles_file_full, wxBITMAP_TYPE_BMP)) {
-			// Error: bmp could not be loaded
-		}
-		mask_tiles = new wxMask(*tiles, mask_colour);
-		tiles->SetMask(mask_tiles);
-
-		props_file_full = _("");
-		props_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
-		props_file_full.Append(wxString::FromAscii(level->header.filename_props));
-		
-		props = new wxBitmap();
-		if(!props->LoadFile(props_file_full, wxBITMAP_TYPE_BMP)) {
-			// Error: bmp could not be loaded
-		}
-		mask_props = new wxMask(*props, mask_colour);
-		props->SetMask(mask_props);
-
-		tilepanel->setLevel(level, tiles);
-		tilepanel->setTile(-1);
+		LevelLoadBitmaps();
 
 		tile_selected = -1;
 		
@@ -364,8 +309,34 @@ void MainFrame::LevelOpen() {
 
 		display->Refresh();
 	}
+}
 
-	delete dialog;
+void MainFrame::LevelOpen() {
+	wxString wildcard = _("Level files (*.lvl)|*.lvl|All files (*.*)|*.*");
+	wxFileDialog dialog(this, _("Select level"), wxEmptyString, wxEmptyString, wildcard, wxFD_OPEN);
+	
+	if(dialog.ShowModal() == wxID_OK) {
+		LevelClose();
+
+		level = new Level();
+		level->load(dialog.GetPath().ToAscii());
+		level_filename = dialog.GetPath();
+		
+		wxString title;
+
+		title = _("Smash Battle - level editor [");
+		title.Append(wxString::FromAscii(level->header.name)).Append(_("]"));
+
+		this->SetTitle(title);
+
+		LevelLoadBitmaps();
+
+		tile_selected = -1;
+		
+		level_modified = false;
+
+		display->Refresh();
+	}
 }
 
 bool MainFrame::LevelPromptClose() {
@@ -415,8 +386,96 @@ void MainFrame::LevelSave() {
 	if(level == 0)
 		return;
 
-	level->save(level_filename.ToAscii());
+ 	level->save(level_filename.ToAscii());
 	level_modified = false;
+}
+
+void MainFrame::LevelOptions() {
+	LevelSettingsDialog dialog(this, wxID_ANY);
+	LEVEL_HEADER hdr;
+
+	if(dialog.EditLevel(level_filename, level->header) == wxID_OK) {
+		dialog.GetHeader(hdr);
+
+		memcpy(&level->header, &hdr, sizeof(LEVEL_HEADER));
+				
+		LevelLoadBitmaps();
+
+		level_modified = true;
+		display->Refresh();
+	}
+}
+
+void MainFrame::LevelLoadBitmaps() {
+	wxString path;
+	wxString bg_file_full;
+	wxString tiles_file_full;
+	wxString props_file_full;
+	wxColour mask_colour;
+	char sep;
+		
+	bg_color = wxColour((level->header.background_color >> 16) & 0xff, (level->header.background_color >> 8) & 0xff, level->header.background_color & 0xff);
+
+	mask_colour = wxColour(0, 0xff, 0xff);
+
+	sep = wxFileName::GetPathSeparator();
+
+	path = level_filename.BeforeLast(sep).BeforeLast(sep);
+
+	if(level->header.filename_background[0] == 0) {
+		delete background;
+		background = 0;
+	} else {
+		bg_file_full = _("");
+		bg_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
+		bg_file_full.Append(wxString::FromAscii(level->header.filename_background));
+
+		background = new wxBitmap();
+		if(!background->LoadFile(bg_file_full, wxBITMAP_TYPE_BMP)) {
+			// Error: bmp could not be loaded
+			delete background;
+			background = 0;
+			wxMessageBox(_("Background file could not be loaded"), _("Error"), wxICON_EXCLAMATION);
+		}
+	}
+
+	tiles_file_full = _("");
+	tiles_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
+	tiles_file_full.Append(wxString::FromAscii(level->header.filename_tiles));
+
+	tiles = new wxBitmap();
+	if(!tiles->LoadFile(tiles_file_full, wxBITMAP_TYPE_BMP)) {
+		// Error: bmp could not be loaded
+		delete tiles;
+		tiles = 0;
+		wxMessageBox(_("Tiles file could not be loaded"), _("Error"), wxICON_EXCLAMATION);
+	} else {
+		mask_tiles = new wxMask(*tiles, mask_colour);
+		tiles->SetMask(mask_tiles);
+	}
+
+	if(level->header.filename_props[0] == 0) {
+		delete props;
+		props = 0;
+	} else {
+		props_file_full = _("");
+		props_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
+		props_file_full.Append(wxString::FromAscii(level->header.filename_props));
+
+		props = new wxBitmap();
+		if(!props->LoadFile(props_file_full, wxBITMAP_TYPE_BMP)) {
+			// Error: bmp could not be loaded
+			delete props;
+			props = 0;
+			wxMessageBox(_("Props file could not be loaded"), _("Error"), wxICON_EXCLAMATION);
+		} else {
+			mask_props = new wxMask(*props, mask_colour);
+			props->SetMask(mask_props);
+		}
+	}
+
+	tilepanel->setLevel(level, tiles);
+	tilepanel->setTile(-1);
 }
 
 void MainFrame::OnToggleBackground(wxCommandEvent &event) {

@@ -15,6 +15,8 @@ public:
 	
 	void InitializeComponents();
 
+	void TileCopy();
+	void TilePaste();
 protected:
 	void OnExit(wxCloseEvent &event);
 
@@ -26,6 +28,7 @@ protected:
     void OnDisplayPaint(wxPaintEvent &event);
 	void OnDisplayErase(wxEraseEvent &event);
 	void OnDisplayMouseDown(wxMouseEvent &event);
+	void OnDisplayKeyDown(wxKeyEvent &event);
 	
 	void OnToggleBackground(wxCommandEvent &event);
 	void OnToggleTiles(wxCommandEvent &event);
@@ -73,6 +76,9 @@ protected:
 	wxBitmap * pstarts;
 
 	int tile_selected;
+	
+	LEVEL_TILE tile_copy;
+	bool tile_copied;
 
 	bool show_grid;
 	bool show_background;

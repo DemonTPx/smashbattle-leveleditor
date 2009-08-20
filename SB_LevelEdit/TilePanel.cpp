@@ -116,15 +116,12 @@ void TilePanel::OnChkShowInPreview(wxCommandEvent &event) {
 }
 
 void TilePanel::OnBtnCopy(wxCommandEvent &event) {
-	memcpy(&instance->copy, &level->tile[instance->tile], sizeof(LEVEL_TILE));
+	MainFrame::instance->TileCopy();
 	btnPaste->Enable();
 }
 
 void TilePanel::OnBtnPaste(wxCommandEvent &event) {
-	memcpy(&level->tile[instance->tile], &instance->copy, sizeof(LEVEL_TILE));
-	setTile(tile);
-	instance->saveTile();
-	MainFrame::instance->Refresh();
+	MainFrame::instance->TilePaste();
 }
 
 void TilePanel::UpdateLabels() {

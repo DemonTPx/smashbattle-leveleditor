@@ -44,6 +44,9 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	show_pstarts = false;
 
 	tile_selected = -1;
+	
+	memset(&tile_copy, 0, sizeof(LEVEL_TILE));
+	tile_copied = false;
 }
 
 MainFrame::~MainFrame() {
@@ -81,6 +84,8 @@ void MainFrame::InitializeComponents()
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
 	display->Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler(MainFrame::OnDisplayErase));
 	display->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MainFrame::OnDisplayMouseDown));
+	display->Connect(wxEVT_KEY_DOWN, wxCharEventHandler(MainFrame::OnDisplayKeyDown));
+	display->SetFocus();
 
 	tilepanel = new TilePanel(this, wxID_ANY, wxPoint(640, 30), wxSize(200, 480));
 
@@ -97,6 +102,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_TOGGLEBUTTON(ID_ToggleProps, MainFrame::OnToggleProps)
 	EVT_TOGGLEBUTTON(ID_TogglePStarts, MainFrame::OnTogglePStarts)
 	EVT_CLOSE(MainFrame::OnExit)
+	EVT_CHAR_HOOK(MainFrame::OnDisplayKeyDown)
 END_EVENT_TABLE()
 
 void MainFrame::OnExit(wxCloseEvent &event)
@@ -126,7 +132,50 @@ void MainFrame::OnDisplayMouseDown(wxMouseEvent &event) {
 
 	f->tilepanel->setTile(sel);
 
+	f->display->SetFocus();
 	f->display->Refresh();
+}
+
+void MainFrame::OnDisplayKeyDown(wxKeyEvent &event) {
+	int x, y, sel;
+	MainFrame * f;
+	f = MainFrame::instance;
+
+	sel = f->tile_selected;
+
+	switch(event.GetKeyCode()) {
+		case WXK_LEFT:
+			sel--;
+			break;
+		case WXK_RIGHT:
+			sel++;
+			break;
+		case WXK_UP:
+			sel -= 20;
+			break;
+		case WXK_DOWN:
+			sel += 20;
+			break;
+		case 'C':
+			if(event.GetModifiers() == wxMOD_CONTROL)
+				TileCopy();
+			break;
+		case 'V':
+			if(event.GetModifiers() == wxMOD_CONTROL)
+				TilePaste();
+			break;
+	}
+	
+	if(sel != f->tile_selected) {
+		if(sel < 0) sel += 300;
+		if(sel >= 300) sel -= 300;
+
+		f->tile_selected = sel;
+		f->tilepanel->setTile(sel);
+
+		f->display->SetFocus();
+		f->Refresh();
+	}
 }
 
 
@@ -476,6 +525,19 @@ void MainFrame::LevelLoadBitmaps() {
 
 	tilepanel->setLevel(level, tiles);
 	tilepanel->setTile(-1);
+}
+
+void MainFrame::TileCopy() {
+	memcpy(&instance->tile_copy, &instance->level->tile[instance->tile_selected], sizeof(LEVEL_TILE));
+	tile_copied = true;
+}
+
+void MainFrame::TilePaste() {
+	if(!tile_copied) return;
+	memcpy(&instance->level->tile[instance->tile_selected], &instance->tile_copy, sizeof(LEVEL_TILE));
+	instance->tilepanel->setTile(instance->tile_selected);
+	instance->Refresh();
+	level_modified = true;
 }
 
 void MainFrame::OnToggleBackground(wxCommandEvent &event) {

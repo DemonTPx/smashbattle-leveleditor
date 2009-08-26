@@ -34,6 +34,8 @@ protected:
 	wxButton * btnCopy;
 	wxButton * btnPaste;
 
+	wxButton * btnPlayerStart;
+
 	void OnSliderHP(wxScrollEvent &event);
 
 	void UpdateLabels();
@@ -43,6 +45,8 @@ protected:
 
 	void OnBtnCopy(wxCommandEvent &event);
 	void OnBtnPaste(wxCommandEvent &event);
+
+	void OnBtnPlayerStart(wxCommandEvent &event);
 };
 
 enum {
@@ -51,5 +55,6 @@ enum {
 	ID_chkBouncable,
 	ID_chkShowInPreview,
 	ID_btnCopy,
-	ID_btnPaste
+	ID_btnPaste,
+	ID_btnPlayerStart
 };

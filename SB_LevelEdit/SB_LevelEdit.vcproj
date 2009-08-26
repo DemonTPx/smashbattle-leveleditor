@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PlayerStartDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PropDialog.cpp"
 				>
 			</File>
@@ -230,6 +234,10 @@
 			</File>
 			<File
 				RelativePath=".\MainFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PlayerStartDialog.h"
 				>
 			</File>
 			<File

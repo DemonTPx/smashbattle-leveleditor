@@ -5,6 +5,7 @@
 #endif
 
 #include "MainFrame.h"
+#include "PlayerStartDialog.h"
 #include "TilePanel.h"
 
 TilePanel * TilePanel::instance = 0;
@@ -35,6 +36,9 @@ void TilePanel::InitializeComponents() {
 
 	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"), wxPoint(105, 290), wxSize(90, 30));
 	btnPaste->Disable();
+
+	btnPlayerStart = new wxButton(this, ID_btnPlayerStart, _("Player start"), wxPoint(5, 330), wxSize(190, 30));
+	btnPlayerStart->Disable();
 }
 
 BEGIN_EVENT_TABLE(TilePanel, wxPanel)
@@ -42,6 +46,7 @@ BEGIN_EVENT_TABLE(TilePanel, wxPanel)
 	EVT_CHECKBOX(ID_chkShowInPreview, TilePanel::OnChkShowInPreview)
 	EVT_BUTTON(ID_btnCopy, TilePanel::OnBtnCopy)
 	EVT_BUTTON(ID_btnPaste, TilePanel::OnBtnPaste)
+	EVT_BUTTON(ID_btnPlayerStart, TilePanel::OnBtnPlayerStart)
 END_EVENT_TABLE()
 
 void TilePanel::setLevel(Level * l, wxBitmap * tiles) {
@@ -59,6 +64,7 @@ void TilePanel::setTile(int t) {
 		chkShowInPreview->Disable();
 
 		btnCopy->Disable();
+		btnPlayerStart->Disable();
 	} else {
 		sliderHP->Enable();
 
@@ -76,6 +82,7 @@ void TilePanel::setTile(int t) {
 		UpdateLabels();
 		
 		btnCopy->Enable();
+		btnPlayerStart->Enable();
 	}
 }
 
@@ -122,6 +129,40 @@ void TilePanel::OnBtnCopy(wxCommandEvent &event) {
 
 void TilePanel::OnBtnPaste(wxCommandEvent &event) {
 	MainFrame::instance->TilePaste();
+}
+
+void TilePanel::OnBtnPlayerStart(wxCommandEvent &event) {
+	int ret;
+	int pstile;
+	PlayerStartDialog dialog(this, wxID_ANY);
+
+	LEVEL_PLAYERSTART * ps;
+
+	for(unsigned int i = 0; i < 4; i++) {
+		pstile = (level->playerstart[i].y * TILE_COLS) + level->playerstart[i].x;
+		if(tile == pstile) {
+			dialog.SetPlayerStart(level->playerstart[i]);
+		}
+	}
+	
+	ret = dialog.ShowModal();
+	if(ret == wxID_OK) {
+		for(unsigned int i = 0; i < 4; i++) {
+			pstile = (level->playerstart[i].y * TILE_COLS) + level->playerstart[i].x;
+			if(tile == pstile) {
+				level->playerstart[i].player = 0xffff;
+			}
+		}
+		if(dialog.GetPlayer() >= 0 && dialog.GetPlayer() < 4) {
+			ps = &level->playerstart[dialog.GetPlayer()];
+			ps->x = tile % TILE_COLS;
+			ps->y = tile / TILE_COLS;
+			dialog.GetPlayerStart(*ps);
+		}
+
+		MainFrame::instance->level_modified = true;
+		MainFrame::instance->Refresh();
+	}
 }
 
 void TilePanel::UpdateLabels() {

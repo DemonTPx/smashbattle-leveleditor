@@ -146,38 +146,40 @@ void MainFrame::OnDisplayKeyDown(wxKeyEvent &event) {
 
 	sel = f->tile_selected;
 
-	switch(event.GetKeyCode()) {
-		case WXK_LEFT:
-			sel--;
-			break;
-		case WXK_RIGHT:
-			sel++;
-			break;
-		case WXK_UP:
-			sel -= 20;
-			break;
-		case WXK_DOWN:
-			sel += 20;
-			break;
-		case 'C':
-			if(event.GetModifiers() == wxMOD_CONTROL)
-				TileCopy();
-			break;
-		case 'V':
-			if(event.GetModifiers() == wxMOD_CONTROL)
-				TilePaste();
-			break;
-	}
-	
-	if(sel != f->tile_selected) {
-		if(sel < 0) sel += 300;
-		if(sel >= 300) sel -= 300;
+	if(sel != -1) {
+		switch(event.GetKeyCode()) {
+			case WXK_LEFT:
+				sel--;
+				break;
+			case WXK_RIGHT:
+				sel++;
+				break;
+			case WXK_UP:
+				sel -= TILE_COLS;
+				break;
+			case WXK_DOWN:
+				sel += TILE_COLS;
+				break;
+			case 'C':
+				if(event.GetModifiers() == wxMOD_CONTROL)
+					TileCopy();
+				break;
+			case 'V':
+				if(event.GetModifiers() == wxMOD_CONTROL)
+					TilePaste();
+				break;
+		}
+		
+		if(sel != f->tile_selected) {
+			if(sel < 0) sel += 300;
+			if(sel >= 300) sel -= 300;
 
-		f->tile_selected = sel;
-		f->tilepanel->setTile(sel);
+			f->tile_selected = sel;
+			f->tilepanel->setTile(sel);
 
-		f->display->SetFocus();
-		f->Refresh();
+			f->display->SetFocus();
+			f->Refresh();
+		}
 	}
 }
 

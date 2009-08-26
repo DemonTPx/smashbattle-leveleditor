@@ -80,6 +80,7 @@ void PropsPanel::OnBtnAdd(wxCommandEvent &event) {
 		p = new LEVEL_PROP;
 
 		dialog.GetProp(*p);
+
 		level->props->push_back(p);
 		
 		lstProps->Append(wxString::Format(_("size:%dx%d src:%dx%d dst:%dx%d"),

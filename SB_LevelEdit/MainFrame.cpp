@@ -44,6 +44,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	show_pstarts = false;
 
 	tile_selected = -1;
+	prop_selected = -1;
 	
 	memset(&tile_copy, 0, sizeof(LEVEL_TILE));
 	tile_copied = false;
@@ -87,7 +88,9 @@ void MainFrame::InitializeComponents()
 	display->Connect(wxEVT_KEY_DOWN, wxCharEventHandler(MainFrame::OnDisplayKeyDown));
 	display->SetFocus();
 
-	tilepanel = new TilePanel(this, wxID_ANY, wxPoint(640, 30), wxSize(200, 480));
+	tilepanel = new TilePanel(this, wxID_ANY, wxPoint(640, 30), wxSize(200, 365));
+
+	propspanel = new PropsPanel(this, wxID_ANY, wxPoint(640, 395), wxSize(200, 115));
 
 	pstarts = new wxBitmap(_("pstarts.bmp"), wxBITMAP_TYPE_BMP);
 }
@@ -137,7 +140,7 @@ void MainFrame::OnDisplayMouseDown(wxMouseEvent &event) {
 }
 
 void MainFrame::OnDisplayKeyDown(wxKeyEvent &event) {
-	int x, y, sel;
+	int sel;
 	MainFrame * f;
 	f = MainFrame::instance;
 
@@ -223,6 +226,23 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 			prop = f->props->GetSubBitmap(rect);
 
 			dc.DrawBitmap(prop, p, true);
+		}
+		
+
+		// Draw selected prop
+		if(f->prop_selected != -1) {
+			wxRect r;
+			LEVEL_PROP * pr;
+
+			pr = f->level->props->at(f->prop_selected);
+			r.x = pr->dst.x;
+			r.y = pr->dst.y;
+			r.width = pr->src.w;
+			r.height = pr->src.h;
+
+			dc.SetPen(wxPen(wxColor(0x88, 0x88, 0xff), 2));
+			dc.SetBrush(*wxTRANSPARENT_BRUSH);
+			dc.DrawRectangle(r);
 		}
 	}
 
@@ -353,6 +373,7 @@ void MainFrame::LevelNew() {
 		LevelLoadBitmaps();
 
 		tile_selected = -1;
+		prop_selected = -1;
 		
 		level_modified = false;
 
@@ -381,6 +402,7 @@ void MainFrame::LevelOpen() {
 		LevelLoadBitmaps();
 
 		tile_selected = -1;
+		prop_selected = -1;
 		
 		level_modified = false;
 
@@ -413,6 +435,8 @@ void MainFrame::LevelClose() {
 
 	tilepanel->setLevel(0, 0);
 	tilepanel->setTile(-1);
+
+	propspanel->setLevel(0);
 
 	delete level;
 	level = 0;
@@ -525,6 +549,8 @@ void MainFrame::LevelLoadBitmaps() {
 
 	tilepanel->setLevel(level, tiles);
 	tilepanel->setTile(-1);
+
+	propspanel->setLevel(level);
 }
 
 void MainFrame::TileCopy() {

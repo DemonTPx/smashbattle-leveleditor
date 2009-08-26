@@ -2,6 +2,7 @@
 
 #include "Level.h"
 #include "TilePanel.h"
+#include "PropsPanel.h"
 #include "wx/tglbtn.h"
 
 class MainFrame : public wxFrame {
@@ -12,6 +13,8 @@ public:
 	static MainFrame * instance;
 	
 	bool level_modified;
+
+	int prop_selected;
 	
 	void InitializeComponents();
 
@@ -58,6 +61,7 @@ protected:
 	wxPanel * toolbar;
 	wxPanel * display;
 	TilePanel * tilepanel;
+	PropsPanel * propspanel;
 
 	Level * level;
 	wxString level_filename;

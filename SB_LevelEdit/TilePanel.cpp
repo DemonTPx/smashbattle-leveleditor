@@ -33,7 +33,7 @@ void TilePanel::InitializeComponents() {
 	btnCopy = new wxButton(this, ID_btnCopy, _("&Copy"), wxPoint(5, 290), wxSize(90, 30));
 	btnCopy->Disable();
 
-	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"), wxPoint(100, 290), wxSize(90, 30));
+	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"), wxPoint(105, 290), wxSize(90, 30));
 	btnPaste->Disable();
 }
 

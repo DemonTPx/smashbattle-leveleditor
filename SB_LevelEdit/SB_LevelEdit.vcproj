@@ -195,6 +195,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PropDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PropsPanel.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TilePanel.cpp"
 				>
 			</File>
@@ -222,6 +230,14 @@
 			</File>
 			<File
 				RelativePath=".\MainFrame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PropDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PropsPanel.h"
 				>
 			</File>
 			<File

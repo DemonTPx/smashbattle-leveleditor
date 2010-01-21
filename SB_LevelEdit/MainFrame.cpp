@@ -268,12 +268,10 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 			rect.width = TILE_W;
 			rect.height = TILE_H;
 
-			if(!ti->indestructible) {
-				if(ti->hp < 40)
-					rect.y += TILE_H;
-				if(ti->hp < 20)
-					rect.y += TILE_H;
-			}
+			if(ti->hp < 40)
+				rect.y += TILE_H;
+			if(ti->hp < 20)
+				rect.y += TILE_H;
 
 			tile = f->tiles->GetSubBitmap(rect);
 
@@ -466,6 +464,9 @@ void MainFrame::LevelSave() {
 }
 
 void MainFrame::LevelOptions() {
+	if(level == 0)
+		return;
+
 	LevelSettingsDialog dialog(this, wxID_ANY);
 	LEVEL_HEADER hdr;
 
@@ -505,6 +506,11 @@ void MainFrame::LevelLoadBitmaps() {
 		bg_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
 		bg_file_full.Append(wxString::FromAscii(level->header.filename_background));
 
+		if(background != 0) {
+			delete background;
+			background = 0;
+		}
+
 		background = new wxBitmap();
 		if(!background->LoadFile(bg_file_full, wxBITMAP_TYPE_BMP)) {
 			// Error: bmp could not be loaded
@@ -517,6 +523,11 @@ void MainFrame::LevelLoadBitmaps() {
 	tiles_file_full = _("");
 	tiles_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
 	tiles_file_full.Append(wxString::FromAscii(level->header.filename_tiles));
+
+	if(tiles != 0) {
+		delete tiles;
+		tiles = 0;
+	}
 
 	tiles = new wxBitmap();
 	if(!tiles->LoadFile(tiles_file_full, wxBITMAP_TYPE_BMP)) {
@@ -536,6 +547,11 @@ void MainFrame::LevelLoadBitmaps() {
 		props_file_full = _("");
 		props_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
 		props_file_full.Append(wxString::FromAscii(level->header.filename_props));
+
+		if(props != 0) {
+			delete props;
+			props = 0;
+		}
 
 		props = new wxBitmap();
 		if(!props->LoadFile(props_file_full, wxBITMAP_TYPE_BMP)) {

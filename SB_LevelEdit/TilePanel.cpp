@@ -22,12 +22,13 @@ TilePanel::TilePanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, const 
 }
 
 void TilePanel::InitializeComponents() {
-	tileSelector = new TileSelector(this, wxID_ANY, wxPoint(5, 0), wxSize(190, 190));
+	tileSelector = new TileSelector(this, wxID_ANY, wxPoint(5, 0), wxSize(190, 170));
 
-	lblHP = new wxStaticText(this, wxID_ANY, _("HP: (infinite)"), wxPoint(5, 200), wxSize(190, 20));
-	sliderHP = new wxSlider(this, ID_sliderHP, -1, -1, 250, wxPoint(5, 220), wxSize(190, 20));
+	lblHP = new wxStaticText(this, wxID_ANY, _("HP: (infinite)"), wxPoint(5, 180), wxSize(190, 20));
+	sliderHP = new wxSlider(this, ID_sliderHP, 50, 0, 250, wxPoint(5, 200), wxSize(190, 20));
 	sliderHP->Connect(wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(TilePanel::OnSliderHP));
 
+	chkIndestructible = new wxCheckBox(this, ID_chkIndestructible, _("Indestructible"), wxPoint(5, 225), wxSize(190, 20));
 	chkBouncable = new wxCheckBox(this, ID_chkBouncable, _("Bouncable"), wxPoint(5, 245), wxSize(190, 20));
 	chkShowInPreview = new wxCheckBox(this, ID_chkShowInPreview, _("Show in preview"), wxPoint(5, 265), wxSize(190, 20));
 
@@ -42,6 +43,7 @@ void TilePanel::InitializeComponents() {
 }
 
 BEGIN_EVENT_TABLE(TilePanel, wxPanel)
+	EVT_CHECKBOX(ID_chkIndestructible, TilePanel::OnChkIndestructible)
 	EVT_CHECKBOX(ID_chkBouncable, TilePanel::OnChkBouncable)
 	EVT_CHECKBOX(ID_chkShowInPreview, TilePanel::OnChkShowInPreview)
 	EVT_BUTTON(ID_btnCopy, TilePanel::OnBtnCopy)
@@ -60,6 +62,7 @@ void TilePanel::setTile(int t) {
 	if(t == -1 || level == 0) {
 		sliderHP->Disable();
 
+		chkIndestructible->Disable();
 		chkBouncable->Disable();
 		chkShowInPreview->Disable();
 
@@ -68,21 +71,23 @@ void TilePanel::setTile(int t) {
 	} else {
 		sliderHP->Enable();
 
+		chkIndestructible->Enable();
 		chkBouncable->Enable();
 		chkShowInPreview->Enable();
 		
 		tileSelector->SetSelected(level->tile[t].tile);
-		if(level->tile[t].indestructible)
-			sliderHP->SetValue(-1);
-		else
-			sliderHP->SetValue(level->tile[t].hp);
+		sliderHP->SetValue(level->tile[t].hp);
 
+		chkIndestructible->SetValue(level->tile[t].indestructible);
 		chkBouncable->SetValue(level->tile[t].bouncing);
 		chkShowInPreview->SetValue(level->tile[t].show_in_preview);
 		UpdateLabels();
 		
 		btnCopy->Enable();
 		btnPlayerStart->Enable();
+
+		if(chkIndestructible->IsChecked())
+			sliderHP->Disable();
 	}
 }
 
@@ -95,13 +100,8 @@ void TilePanel::saveTile() {
 	} else {
 		level->tile[tile].tile = tileSelector->GetSelected();
 	}
-	if(sliderHP->GetValue() == -1) {
-		level->tile[tile].hp = 0xffff;
-		level->tile[tile].indestructible = true;
-	} else {
-		level->tile[tile].hp = sliderHP->GetValue();
-		level->tile[tile].indestructible = false;
-	}
+	level->tile[tile].hp = sliderHP->GetValue();
+	level->tile[tile].indestructible = chkIndestructible->GetValue();
 	level->tile[tile].bouncing = chkBouncable->GetValue();
 	level->tile[tile].show_in_preview = chkShowInPreview->GetValue();
 
@@ -112,6 +112,15 @@ void TilePanel::OnSliderHP(wxScrollEvent &event) {
 	UpdateLabels();
 	instance->saveTile();
 	MainFrame::instance->Refresh();
+}
+
+void TilePanel::OnChkIndestructible(wxCommandEvent &event) {
+	if(instance->chkIndestructible->IsChecked()) {
+		instance->sliderHP->Disable();
+	} else {
+		instance->sliderHP->Enable();
+	}
+	instance->saveTile();
 }
 
 void TilePanel::OnChkBouncable(wxCommandEvent &event) {

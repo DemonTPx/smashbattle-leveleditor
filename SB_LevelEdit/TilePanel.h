@@ -28,6 +28,7 @@ protected:
 	wxStaticText * lblHP;
 	wxSlider * sliderHP;
 
+	wxCheckBox * chkIndestructible;
 	wxCheckBox * chkBouncable;
 	wxCheckBox * chkShowInPreview;
 
@@ -40,6 +41,7 @@ protected:
 
 	void UpdateLabels();
 
+	void OnChkIndestructible(wxCommandEvent &event);
 	void OnChkBouncable(wxCommandEvent &event);
 	void OnChkShowInPreview(wxCommandEvent &event);
 
@@ -52,6 +54,7 @@ protected:
 enum {
 	ID_sliderTile = 1,
 	ID_sliderHP,
+	ID_chkIndestructible,
 	ID_chkBouncable,
 	ID_chkShowInPreview,
 	ID_btnCopy,

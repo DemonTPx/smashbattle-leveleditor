@@ -10,7 +10,7 @@
 
 LevelSettingsDialog * LevelSettingsDialog::instance = NULL;
 
-LevelSettingsDialog::LevelSettingsDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("New level"), pos, wxSize(400, 300)){
+LevelSettingsDialog::LevelSettingsDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("New level"), pos, wxSize(400, 325)){
 	instance = this;
 
 	InitializeComponents();
@@ -32,6 +32,7 @@ void LevelSettingsDialog::InitializeComponents() {
 	lblFileBackground = new wxStaticText(this, wxID_ANY, _("Background file:"), wxPoint(10, 150), wxSize(100, 20));
 	lblFileTiles = new wxStaticText(this, wxID_ANY, _("Tiles file:"), wxPoint(10, 175), wxSize(100, 20));
 	lblFileProps = new wxStaticText(this, wxID_ANY, _("Props file:"), wxPoint(10, 200), wxSize(100, 20));
+	lblFileProps = new wxStaticText(this, wxID_ANY, _("Music file:"), wxPoint(10, 225), wxSize(100, 20));
 
 	// Input fields
 	txtName = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 5), wxSize(270, 20));
@@ -55,11 +56,12 @@ void LevelSettingsDialog::InitializeComponents() {
 	cmbFileBackground = new wxChoice(this, wxID_ANY, wxPoint(120, 150), wxSize(270, 20));
 	cmbFileTiles = new wxChoice(this, wxID_ANY, wxPoint(120, 175), wxSize(270, 20));
 	cmbFileProps = new wxChoice(this, wxID_ANY, wxPoint(120, 200), wxSize(270, 20));
+	cmbFileMusic = new wxChoice(this, wxID_ANY, wxPoint(120, 225), wxSize(270, 20));
 
 	// Buttons
-	btnSave = new wxButton(this, wxID_OK, _("&OK"), wxPoint(220, 235), wxSize(80, 30));
+	btnSave = new wxButton(this, wxID_OK, _("&OK"), wxPoint(220, 260), wxSize(80, 30));
 	btnSave->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(310, 235), wxSize(80, 30));
+	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(310, 260), wxSize(80, 30));
 }
 
 int LevelSettingsDialog::NewLevel() {
@@ -69,6 +71,7 @@ int LevelSettingsDialog::NewLevel() {
 	wxFileSystem fs;
 	wxString file;
 	wxString gfx_path;
+	wxString music_path;
 	char sep;
 
 	ret = dialog.ShowModal();
@@ -91,17 +94,29 @@ int LevelSettingsDialog::NewLevel() {
 			file = fs.FindNext();
 		}
 
+		music_path = dialog.GetPath().BeforeLast(sep).BeforeLast(sep);
+		music_path.Append(sep).Append(_("music")).Append(sep);
+
+		fs.ChangePathTo(music_path);
+		file = fs.FindFirst(_("*.ogg"), wxFILE);
+		while(file != wxEmptyString) {
+			cmbFileMusic->Append(file.AfterLast(sep));
+			
+			file = fs.FindNext();
+		}
+
 		ret = this->ShowModal();
 	}
 
 	return ret;
 }
 
-int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_HEADER &hdr) {
+int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_META &meta) {
 	wxFileSystem fs;
 	wxString file;
 	wxString basename;
 	wxString gfx_path;
+	wxString music_path;
 	char sep;
 	wxColour color;
 
@@ -124,52 +139,67 @@ int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_HEADER &hdr) {
 		basename = file.AfterLast(sep);
 
 		cmbFileTiles->Append(basename);
-		if(basename == wxString(hdr.filename_tiles, wxConvUTF8))
+		if(basename == wxString(meta.filename_tiles, wxConvUTF8))
 			cmbFileTiles->Select(cmbFileTiles->GetCount() - 1);
 
 		cmbFileBackground->Append(basename);
-		if(basename == wxString(hdr.filename_background, wxConvUTF8))
+		if(basename == wxString(meta.filename_background, wxConvUTF8))
 			cmbFileBackground->Select(cmbFileBackground->GetCount() - 1);
 
 		cmbFileProps->Append(basename);
-		if(basename == wxString(hdr.filename_props, wxConvUTF8))
+		if(basename == wxString(meta.filename_props, wxConvUTF8))
 			cmbFileProps->Select(cmbFileProps->GetCount() - 1);
 		
 		file = fs.FindNext();
 	}
 
-	txtName->SetValue(wxString(hdr.name, wxConvUTF8));
-	txtAuthor->SetValue(wxString(hdr.author, wxConvUTF8));
+	music_path = this->filename.BeforeLast(sep).BeforeLast(sep);
+	music_path.Append(sep).Append(_("music")).Append(sep);
 
-	cmbType->SetSelection(hdr.multiplayer ? 1 : 0);
+	cmbFileMusic->Append(wxEmptyString);
+
+	fs.ChangePathTo(music_path);
+	file = fs.FindFirst(_("*.ogg"), wxFILE);
+	while(file != wxEmptyString) {
+		basename = file.AfterLast(sep);
+
+		cmbFileMusic->Append(basename);
+		if(basename == wxString(meta.filename_music, wxConvUTF8))
+			cmbFileMusic->Select(cmbFileMusic->GetCount() - 1);
+		
+		file = fs.FindNext();
+	}
+
+	txtName->SetValue(wxString(meta.name, wxConvUTF8));
+	txtAuthor->SetValue(wxString(meta.author, wxConvUTF8));
+
+	cmbType->SetSelection(meta.multiplayer ? 1 : 0);
 	
-	color.Set((hdr.background_color >> 16) & 0xff, (hdr.background_color >> 8) & 0xff, hdr.background_color & 0xff);
+	color.Set((meta.background_color >> 16) & 0xff, (meta.background_color >> 8) & 0xff, meta.background_color & 0xff);
 	clrBackground->SetColour(color);
 
 	return this->ShowModal();
 }
 
-void LevelSettingsDialog::GetHeader(LEVEL_HEADER &hdr) {
+void LevelSettingsDialog::GetMeta(LEVEL_META &meta) {
 	unsigned int color;
 	wxColour wxc;
 
-	memset(&hdr, 0, sizeof(LEVEL_HEADER));
+	memset(&meta, 0, sizeof(LEVEL_META));
 
-	hdr.id = LEVEL_VERSION;
-	hdr.version = LEVEL_VERSION;
+	strncpy(meta.name, txtName->GetValue().ToAscii(), 20);
+	strncpy(meta.author, txtAuthor->GetValue().ToAscii(), 20);
 
-	strncpy(hdr.name, txtName->GetValue().ToAscii(), 20);
-	strncpy(hdr.author, txtAuthor->GetValue().ToAscii(), 20);
-
-	hdr.multiplayer = (cmbType->GetSelection() == 1);
-	hdr.max_players = wxAtoi(cmbMaxPlayers->GetStringSelection());
+	meta.multiplayer = (cmbType->GetSelection() == 1);
+	meta.max_players = wxAtoi(cmbMaxPlayers->GetStringSelection());
 
 	wxc = clrBackground->GetColour();
 	color = wxc.Red() << 16 | wxc.Green() << 8 | wxc.Blue();
 
-	hdr.background_color = color;
+	meta.background_color = color;
 	
-	strncpy(hdr.filename_background, cmbFileBackground->GetStringSelection().ToAscii(), 30);
-	strncpy(hdr.filename_tiles, cmbFileTiles->GetStringSelection().ToAscii(), 30);
-	strncpy(hdr.filename_props, cmbFileProps->GetStringSelection().ToAscii(), 30);
+	strncpy(meta.filename_background, cmbFileBackground->GetStringSelection().ToAscii(), 30);
+	strncpy(meta.filename_tiles, cmbFileTiles->GetStringSelection().ToAscii(), 30);
+	strncpy(meta.filename_props, cmbFileProps->GetStringSelection().ToAscii(), 30);
+	strncpy(meta.filename_music, cmbFileMusic->GetStringSelection().ToAscii(), 30);
 }

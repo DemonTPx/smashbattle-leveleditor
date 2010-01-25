@@ -6,6 +6,7 @@ Level::Level() {
 	loaded = false;
 
 	for(int i = 0; i < 4; i++) {
+		memset(&playerstart[i], 0, sizeof(LEVEL_PLAYERSTART));
 		playerstart[i].player = 0xffff;
 	}
 }
@@ -17,10 +18,21 @@ Level::~Level() {
 	delete props;
 }
 
-void Level::create(const char * filename, LEVEL_HEADER &hdr) {
-	memcpy(&header, &hdr, sizeof(LEVEL_HEADER));
+void Level::create(const char * filename, LEVEL_META &m) {
+	memcpy(&meta, &m, sizeof(LEVEL_META));
 
-	memset(&tile, -1, sizeof(tile));
+	LEVEL_TILE t;
+	int i;
+
+	t.tile = -1;
+	t.hp = 50;
+	t.indestructible = false;
+	t.show_in_preview = false;
+	t.bouncing = true;
+
+	for(i = 0; i < TILE_COUNT; i++) {
+		memcpy(&tile[i], (char*)&t, sizeof(LEVEL_TILE));
+	}
 
 	save(filename);
 
@@ -40,8 +52,20 @@ void Level::load(const char * filename) {
 	
 	if(header.id != LEVEL_ID) // Invalid file
 		return;
-	if(header.version != LEVEL_VERSION) // Invalid version
+	if(header.version != 1 && header.version != LEVEL_VERSION) // Invalid version
 		return;
+
+	// Read meta data
+	if(header.version == 1) {
+		// Convert version 1 meta data to version 2 meta data
+		LEVEL_META_1 meta1;
+		gzread(file, &meta1, sizeof(LEVEL_META_1));
+		memset(&meta, 0, sizeof(LEVEL_META));
+		memcpy(&meta, &meta1, sizeof(LEVEL_META_1));
+		strncpy(meta.filename_music, "battle.ogg", 30);
+	} else {
+		gzread(file, &meta, sizeof(LEVEL_META));
+	}
 
 	// Tiles
 	gzread(file, &tile, sizeof(tile));
@@ -80,6 +104,8 @@ void Level::save(const char * filename) {
 	header.version = LEVEL_VERSION;
 	
 	gzwrite(file, (char *)&header, sizeof(LEVEL_HEADER));
+
+	gzwrite(file, (char *)&meta, sizeof(LEVEL_META));
 
 	// Tiles
 	gzwrite(file, &tile, sizeof(tile));

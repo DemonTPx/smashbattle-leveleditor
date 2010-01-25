@@ -74,6 +74,9 @@ void PropsPanel::OnBtnAdd(wxCommandEvent &event) {
 	int ret;
 	LEVEL_PROP * p;
 
+	if(level == 0)
+		return;
+
 	PropDialog dialog(this, wxID_ANY, wxDefaultPosition);
 	ret = dialog.ShowModal();
 	if(ret == wxID_OK) {

@@ -60,6 +60,7 @@ void TilePanel::setLevel(Level * l, wxBitmap * tiles) {
 void TilePanel::setTile(int t) {
 	tile = t;
 	if(t == -1 || level == 0) {
+		sliderHP->SetValue(50);
 		sliderHP->Disable();
 
 		chkIndestructible->Disable();
@@ -85,9 +86,6 @@ void TilePanel::setTile(int t) {
 		
 		btnCopy->Enable();
 		btnPlayerStart->Enable();
-
-		if(chkIndestructible->IsChecked())
-			sliderHP->Disable();
 	}
 }
 
@@ -115,11 +113,6 @@ void TilePanel::OnSliderHP(wxScrollEvent &event) {
 }
 
 void TilePanel::OnChkIndestructible(wxCommandEvent &event) {
-	if(instance->chkIndestructible->IsChecked()) {
-		instance->sliderHP->Disable();
-	} else {
-		instance->sliderHP->Enable();
-	}
 	instance->saveTile();
 }
 

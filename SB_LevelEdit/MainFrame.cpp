@@ -353,7 +353,7 @@ void MainFrame::OnOptions(wxCommandEvent &event)
 
 void MainFrame::LevelNew() {
 	LevelSettingsDialog dialog(this, wxID_ANY);
-	LEVEL_HEADER hdr;
+	LEVEL_META meta;
 
 	if(dialog.NewLevel() == wxID_OK) {
 		LevelClose();
@@ -361,12 +361,12 @@ void MainFrame::LevelNew() {
 		level = new Level();
 		
 		level_filename = dialog.filename;
-		dialog.GetHeader(hdr);
-		level->create(level_filename.ToAscii(), hdr);
+		dialog.GetMeta(meta);
+		level->create(level_filename.ToAscii(), meta);
 		wxString title;
 
 		title = _("Smash Battle - level editor [");
-		title.Append(wxString::FromAscii(level->header.name)).Append(_("]"));
+		title.Append(wxString::FromAscii(level->meta.name)).Append(_("]"));
 
 		this->SetTitle(title);
 
@@ -395,7 +395,7 @@ void MainFrame::LevelOpen() {
 		wxString title;
 
 		title = _("Smash Battle - level editor [");
-		title.Append(wxString::FromAscii(level->header.name)).Append(_("]"));
+		title.Append(wxString::FromAscii(level->meta.name)).Append(_("]"));
 
 		this->SetTitle(title);
 
@@ -468,12 +468,12 @@ void MainFrame::LevelOptions() {
 		return;
 
 	LevelSettingsDialog dialog(this, wxID_ANY);
-	LEVEL_HEADER hdr;
+	LEVEL_META meta;
 
-	if(dialog.EditLevel(level_filename, level->header) == wxID_OK) {
-		dialog.GetHeader(hdr);
+	if(dialog.EditLevel(level_filename, level->meta) == wxID_OK) {
+		dialog.GetMeta(meta);
 
-		memcpy(&level->header, &hdr, sizeof(LEVEL_HEADER));
+		memcpy(&level->meta, &meta, sizeof(LEVEL_META));
 				
 		LevelLoadBitmaps();
 
@@ -490,7 +490,7 @@ void MainFrame::LevelLoadBitmaps() {
 	wxColour mask_colour;
 	char sep;
 		
-	bg_color = wxColour((level->header.background_color >> 16) & 0xff, (level->header.background_color >> 8) & 0xff, level->header.background_color & 0xff);
+	bg_color = wxColour((level->meta.background_color >> 16) & 0xff, (level->meta.background_color >> 8) & 0xff, level->meta.background_color & 0xff);
 
 	mask_colour = wxColour(0, 0xff, 0xff);
 
@@ -498,13 +498,13 @@ void MainFrame::LevelLoadBitmaps() {
 
 	path = level_filename.BeforeLast(sep).BeforeLast(sep);
 
-	if(level->header.filename_background[0] == 0) {
+	if(level->meta.filename_background[0] == 0) {
 		delete background;
 		background = 0;
 	} else {
 		bg_file_full = _("");
 		bg_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
-		bg_file_full.Append(wxString::FromAscii(level->header.filename_background));
+		bg_file_full.Append(wxString::FromAscii(level->meta.filename_background));
 
 		if(background != 0) {
 			delete background;
@@ -522,7 +522,7 @@ void MainFrame::LevelLoadBitmaps() {
 
 	tiles_file_full = _("");
 	tiles_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
-	tiles_file_full.Append(wxString::FromAscii(level->header.filename_tiles));
+	tiles_file_full.Append(wxString::FromAscii(level->meta.filename_tiles));
 
 	if(tiles != 0) {
 		delete tiles;
@@ -540,13 +540,13 @@ void MainFrame::LevelLoadBitmaps() {
 		tiles->SetMask(mask_tiles);
 	}
 
-	if(level->header.filename_props[0] == 0) {
+	if(level->meta.filename_props[0] == 0) {
 		delete props;
 		props = 0;
 	} else {
 		props_file_full = _("");
 		props_file_full.Append(path).Append(sep).Append(_("gfx")).Append(sep);
-		props_file_full.Append(wxString::FromAscii(level->header.filename_props));
+		props_file_full.Append(wxString::FromAscii(level->meta.filename_props));
 
 		if(props != 0) {
 			delete props;
@@ -573,11 +573,11 @@ void MainFrame::LevelLoadBitmaps() {
 
 void MainFrame::TileCopy() {
 	memcpy(&instance->tile_copy, &instance->level->tile[instance->tile_selected], sizeof(LEVEL_TILE));
-	tile_copied = true;
+	instance->tile_copied = true;
 }
 
 void MainFrame::TilePaste() {
-	if(!tile_copied) return;
+	if(!instance->tile_copied) return;
 	memcpy(&instance->level->tile[instance->tile_selected], &instance->tile_copy, sizeof(LEVEL_TILE));
 	instance->tilepanel->setTile(instance->tile_selected);
 	instance->Refresh();

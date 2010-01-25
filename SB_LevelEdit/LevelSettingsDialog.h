@@ -15,9 +15,9 @@ public:
 	void InitializeComponents();
 
 	int NewLevel();
-	int EditLevel(wxString filename, LEVEL_HEADER &hdr);
+	int EditLevel(wxString filename, LEVEL_META &meta);
 
-	void GetHeader(LEVEL_HEADER &hdr);
+	void GetMeta(LEVEL_META &meta);
 
 	wxString filename;
 protected:
@@ -29,6 +29,7 @@ protected:
 	wxStaticText * lblFileTiles;
 	wxStaticText * lblFileBackground;
 	wxStaticText * lblFileProps;
+	wxStaticText * lblFileMusic;
 
 	wxTextCtrl * txtName;
 	wxTextCtrl * txtAuthor;
@@ -38,6 +39,7 @@ protected:
 	wxChoice * cmbFileTiles;
 	wxChoice * cmbFileBackground;
 	wxChoice * cmbFileProps;
+	wxChoice * cmbFileMusic;
 
 	wxButton * btnSave;
 	wxButton * btnCancel;

@@ -199,7 +199,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NPCDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NPCsPanel.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerStartDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PowerupDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PowerupsPanel.cpp"
 				>
 			</File>
 			<File
@@ -241,7 +257,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NPCDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NPCsPanel.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PlayerStartDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PowerupDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PowerupsPanel.h"
 				>
 			</File>
 			<File
@@ -266,6 +298,14 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\npcs.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\powerups.bmp"
+				>
+			</File>
 			<File
 				RelativePath=".\pstarts.bmp"
 				>

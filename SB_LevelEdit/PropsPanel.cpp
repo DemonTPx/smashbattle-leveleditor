@@ -19,12 +19,12 @@ PropsPanel::PropsPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 }
 
 void PropsPanel::InitializeComponents() {
-	lstProps = new wxListBox(this, wxID_ANY, wxPoint(5, 5), wxSize(190, 70));
+	lstProps = new wxListBox(this, wxID_ANY, wxPoint(5, 5), wxSize(180, 95));
 	lstProps->Connect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(PropsPanel::OnLstPropSelected));
 
-	btnAdd = new wxButton(this, ID_btnAdd, _("add"), wxPoint(5, 80), wxSize(60, 30));
-	btnChg = new wxButton(this, ID_btnChg, _("edit"), wxPoint(70, 80), wxSize(60, 30));
-	btnRem = new wxButton(this, ID_btnRem, _("delete"), wxPoint(135, 80), wxSize(60, 30));
+	btnAdd = new wxButton(this, ID_btnAdd, _("add"), wxPoint(5, 105), wxSize(55, 20));
+	btnChg = new wxButton(this, ID_btnChg, _("edit"), wxPoint(65, 105), wxSize(55, 20));
+	btnRem = new wxButton(this, ID_btnRem, _("delete"), wxPoint(125, 105), wxSize(55, 20));
 }
 
 BEGIN_EVENT_TABLE(PropsPanel, wxPanel)

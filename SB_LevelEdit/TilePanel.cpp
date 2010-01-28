@@ -24,21 +24,21 @@ TilePanel::TilePanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, const 
 void TilePanel::InitializeComponents() {
 	tileSelector = new TileSelector(this, wxID_ANY, wxPoint(5, 0), wxSize(190, 170));
 
-	lblHP = new wxStaticText(this, wxID_ANY, _("HP: (infinite)"), wxPoint(5, 180), wxSize(190, 20));
-	sliderHP = new wxSlider(this, ID_sliderHP, 50, 0, 250, wxPoint(5, 200), wxSize(190, 20));
+	lblHP = new wxStaticText(this, wxID_ANY, _("HP: (infinite)"), wxPoint(5, 175), wxSize(190, 20));
+	sliderHP = new wxSlider(this, ID_sliderHP, 50, 0, 250, wxPoint(65, 175), wxSize(135, 20));
 	sliderHP->Connect(wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(TilePanel::OnSliderHP));
 
-	chkIndestructible = new wxCheckBox(this, ID_chkIndestructible, _("Indestructible"), wxPoint(5, 225), wxSize(190, 20));
-	chkBouncable = new wxCheckBox(this, ID_chkBouncable, _("Bouncable"), wxPoint(5, 245), wxSize(190, 20));
-	chkShowInPreview = new wxCheckBox(this, ID_chkShowInPreview, _("Show in preview"), wxPoint(5, 265), wxSize(190, 20));
+	chkIndestructible = new wxCheckBox(this, ID_chkIndestructible, _("Indestructible"), wxPoint(5, 195), wxSize(190, 20));
+	chkBouncable = new wxCheckBox(this, ID_chkBouncable, _("Bouncable"), wxPoint(5, 215), wxSize(190, 20));
+	chkShowInPreview = new wxCheckBox(this, ID_chkShowInPreview, _("Show in preview"), wxPoint(5, 235), wxSize(190, 20));
 
-	btnCopy = new wxButton(this, ID_btnCopy, _("&Copy"), wxPoint(5, 290), wxSize(90, 30));
+	btnCopy = new wxButton(this, ID_btnCopy, _("&Copy"), wxPoint(5, 260), wxSize(90, 25));
 	btnCopy->Disable();
 
-	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"), wxPoint(105, 290), wxSize(90, 30));
+	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"), wxPoint(105, 260), wxSize(90, 25));
 	btnPaste->Disable();
 
-	btnPlayerStart = new wxButton(this, ID_btnPlayerStart, _("Player start"), wxPoint(5, 330), wxSize(190, 30));
+	btnPlayerStart = new wxButton(this, ID_btnPlayerStart, _("Player start"), wxPoint(5, 290), wxSize(190, 25));
 	btnPlayerStart->Disable();
 }
 

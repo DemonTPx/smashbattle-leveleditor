@@ -3,7 +3,30 @@
 #include "Level.h"
 #include "TilePanel.h"
 #include "PropsPanel.h"
+#include "PowerupsPanel.h"
+#include "NPCsPanel.h"
 #include "wx/tglbtn.h"
+#include "wx/notebook.h"
+
+struct Powerup {
+	int id;
+	wxString name;
+	int w;
+	int h;
+	int x;
+	int y;
+};
+
+struct NPC {
+	int id;
+	wxString name;
+	int w;
+	int h;
+	int left_x;
+	int left_y;
+	int right_x;
+	int right_y;
+};
 
 class MainFrame : public wxFrame {
 public:
@@ -11,10 +34,18 @@ public:
 	~MainFrame();
 	
 	static MainFrame * instance;
+
+	static const int PowerupCount;
+	static const Powerup POWERUP[];
+	
+	static const int NPCCount;
+	static const NPC NPC[];
 	
 	bool level_modified;
 
 	int prop_selected;
+	int powerup_selected;
+	int npc_selected;
 	
 	void InitializeComponents();
 
@@ -37,6 +68,8 @@ protected:
 	void OnToggleTiles(wxCommandEvent &event);
 	void OnToggleProps(wxCommandEvent &event);
 	void OnTogglePStarts(wxCommandEvent &event);
+	void OnTogglePowerups(wxCommandEvent &event);
+	void OnToggleNPCs(wxCommandEvent &event);
 
 	void LevelNew();
 	void LevelOpen();
@@ -57,11 +90,16 @@ protected:
 	wxToggleButton * btnTiles;
 	wxToggleButton * btnProps;
 	wxToggleButton * btnPStarts;
+	wxToggleButton * btnPowerups;
+	wxToggleButton * btnNPCs;
 
 	wxPanel * toolbar;
 	wxPanel * display;
 	TilePanel * tilepanel;
+	wxNotebook * more;
 	PropsPanel * propspanel;
+	PowerupsPanel * powerupspanel;
+	NPCsPanel * npcspanel;
 
 	Level * level;
 	wxString level_filename;
@@ -78,6 +116,9 @@ protected:
 	wxMask * mask_props;
 
 	wxBitmap * pstarts;
+	wxBitmap * powerups;
+	wxBitmap * npcs;
+	wxMask * mask_npcs;
 
 	int tile_selected;
 	
@@ -89,6 +130,8 @@ protected:
 	bool show_tiles;
 	bool show_props;
 	bool show_pstarts;
+	bool show_powerups;
+	bool show_npcs;
 };
 
 enum {
@@ -100,4 +143,6 @@ enum {
 	ID_ToggleTiles,
 	ID_ToggleProps,
 	ID_TogglePStarts,
+	ID_TogglePowerups,
+	ID_ToggleNPCs
 };

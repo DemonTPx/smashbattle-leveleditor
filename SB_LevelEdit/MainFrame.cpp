@@ -21,6 +21,16 @@
 #define PLAYER_H 44
 
 MainFrame * MainFrame::instance = 0;
+	
+const int MainFrame::PowerupCount = 1;
+const Powerup MainFrame::POWERUP[MainFrame::PowerupCount] = {
+	{L_PU_HEALTH, _("Healthpack"), 16, 16, 0, 0},
+};
+
+const int MainFrame::NPCCount = 1;
+const NPC MainFrame::NPC[MainFrame::NPCCount] = {
+	{L_NPC_CHICK, _("Small chick"), 24, 26, 0, 0, 24, 0},
+};
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size) : wxFrame((wxFrame *) NULL, -1, title, pos, size) 
 {
@@ -42,9 +52,13 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 	show_tiles = true;
 	show_props = true;
 	show_pstarts = false;
+	show_powerups = false;
+	show_npcs = false;
 
 	tile_selected = -1;
 	prop_selected = -1;
+	powerup_selected = -1;
+	npc_selected = -1;
 	
 	memset(&tile_copy, 0, sizeof(LEVEL_TILE));
 	tile_copied = false;
@@ -58,6 +72,8 @@ MainFrame::~MainFrame() {
 	if(props != 0) delete props;
 	
 	if(pstarts != 0) delete pstarts;
+	if(powerups != 0) delete powerups;
+	if(npcs != 0) delete npcs;
 }
 
 void MainFrame::InitializeComponents()
@@ -73,13 +89,15 @@ void MainFrame::InitializeComponents()
 	btnSave = new wxButton(toolbar, ID_Save, _("&Save"), wxPoint(160, 0), wxSize(80, 30));
 	btnOptions = new wxButton(toolbar, ID_Options, _("&Options"), wxPoint(260, 0), wxSize(80, 30));
 
-	btnBackground = new wxToggleButton(toolbar, ID_ToggleBackground, _("&Background"), wxPoint(400, 0), wxSize(80, 30));
+	btnBackground = new wxToggleButton(toolbar, ID_ToggleBackground, _("&Background"), wxPoint(360, 0), wxSize(80, 30));
 	btnBackground->SetValue(true);
-	btnTiles = new wxToggleButton(toolbar, ID_ToggleTiles, _("&Tiles"), wxPoint(480, 0), wxSize(80, 30));
+	btnTiles = new wxToggleButton(toolbar, ID_ToggleTiles, _("&Tiles"), wxPoint(440, 0), wxSize(80, 30));
 	btnTiles->SetValue(true);
-	btnProps = new wxToggleButton(toolbar, ID_ToggleProps, _("&Props"), wxPoint(560, 0), wxSize(80, 30));
+	btnProps = new wxToggleButton(toolbar, ID_ToggleProps, _("&Props"), wxPoint(520, 0), wxSize(80, 30));
 	btnProps->SetValue(true);
-	btnPStarts = new wxToggleButton(toolbar, ID_TogglePStarts, _("Player &starts"), wxPoint(640, 0), wxSize(80, 30));
+	btnPStarts = new wxToggleButton(toolbar, ID_TogglePStarts, _("Player &starts"), wxPoint(600, 0), wxSize(80, 30));
+	btnPowerups = new wxToggleButton(toolbar, ID_TogglePowerups, _("Power&ups"), wxPoint(680, 0), wxSize(80, 30));
+	btnNPCs = new wxToggleButton(toolbar, ID_ToggleNPCs, _("NP&Cs"), wxPoint(760, 0), wxSize(80, 30));
 
 	display = new wxPanel(this, wxID_ANY, wxPoint(0, 30), wxSize(640, 480));
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
@@ -88,11 +106,27 @@ void MainFrame::InitializeComponents()
 	display->Connect(wxEVT_KEY_DOWN, wxCharEventHandler(MainFrame::OnDisplayKeyDown));
 	display->SetFocus();
 
-	tilepanel = new TilePanel(this, wxID_ANY, wxPoint(640, 30), wxSize(200, 365));
+	tilepanel = new TilePanel(this, wxID_ANY, wxPoint(640, 30), wxSize(200, 325));
 
-	propspanel = new PropsPanel(this, wxID_ANY, wxPoint(640, 395), wxSize(200, 115));
+	//propspanel = new PropsPanel(this, wxID_ANY, wxPoint(640, 395), wxSize(200, 115));
+
+	more = new wxNotebook(this, wxID_ANY, wxPoint(640, 355), wxSize(200, 155));
+	propspanel = new PropsPanel(more);
+	powerupspanel = new PowerupsPanel(more);
+	npcspanel = new NPCsPanel(more);
+	more->AddPage(propspanel, _("Props"));
+	more->AddPage(powerupspanel, _("Powerups"));
+	more->AddPage(npcspanel, _("NPCs"));
 
 	pstarts = new wxBitmap(_("pstarts.bmp"), wxBITMAP_TYPE_BMP);
+	powerups = new wxBitmap(_("powerups.bmp"), wxBITMAP_TYPE_BMP);
+	npcs = new wxBitmap(_("npcs.bmp"), wxBITMAP_TYPE_BMP);
+	
+	wxColour mask_colour;
+
+	mask_colour = wxColour(0, 0xff, 0xff);
+	mask_npcs = new wxMask(*npcs, mask_colour);
+	npcs->SetMask(mask_npcs);
 }
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -104,6 +138,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_TOGGLEBUTTON(ID_ToggleTiles, MainFrame::OnToggleTiles)
 	EVT_TOGGLEBUTTON(ID_ToggleProps, MainFrame::OnToggleProps)
 	EVT_TOGGLEBUTTON(ID_TogglePStarts, MainFrame::OnTogglePStarts)
+	EVT_TOGGLEBUTTON(ID_TogglePowerups, MainFrame::OnTogglePowerups)
+	EVT_TOGGLEBUTTON(ID_ToggleNPCs, MainFrame::OnToggleNPCs)
 	EVT_CLOSE(MainFrame::OnExit)
 	EVT_CHAR_HOOK(MainFrame::OnDisplayKeyDown)
 END_EVENT_TABLE()
@@ -304,6 +340,7 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 		dc.DrawRectangle(r);
 	}
 
+	// Draw player starts
 	if(f->show_pstarts) {
 		for(int i = 0; i < 4; i++) {
 			if(f->level->playerstart[i].player != 0xffff) {
@@ -323,6 +360,80 @@ void MainFrame::OnDisplayPaint(wxPaintEvent &event) {
 
 				dc.DrawBitmap(sub, p);
 			}
+		}
+	}
+
+	// Draw powerups
+	if(f->show_powerups) {
+		wxPoint p;
+		wxRect rect;
+		wxBitmap powerup;
+		LEVEL_POWERUP * pu;
+		for(unsigned int i = 0; i < f->level->powerups->size(); i++) {
+			pu = f->level->powerups->at(i);
+			p.x = pu->position.x; p.y = pu->position.y;
+
+			rect.x = POWERUP[pu->type].x; rect.y = POWERUP[pu->type].y;
+			rect.width = POWERUP[pu->type].w; rect.height = POWERUP[pu->type].h;
+
+			powerup = f->powerups->GetSubBitmap(rect);
+
+			dc.DrawBitmap(powerup, p, true);
+		}
+		
+
+		// Draw selected prop
+		if(f->powerup_selected != -1) {
+			wxRect r;
+
+			pu = f->level->powerups->at(f->powerup_selected);
+			r.x = pu->position.x;
+			r.y = pu->position.y;
+			r.width = POWERUP[pu->type].w;
+			r.height = POWERUP[pu->type].h;
+
+			dc.SetPen(wxPen(wxColor(0x88, 0x88, 0xff), 2));
+			dc.SetBrush(*wxTRANSPARENT_BRUSH);
+			dc.DrawRectangle(r);
+		}
+	}
+
+	// Draw npcs
+	if(f->show_npcs) {
+		wxPoint p;
+		wxRect rect;
+		wxBitmap enemy;
+		LEVEL_NPC * npc;
+		for(unsigned int i = 0; i < f->level->npcs->size(); i++) {
+			npc = f->level->npcs->at(i);
+			p.x = npc->position.x; p.y = npc->position.y;
+
+			if(npc->move_direction == -1) {
+				rect.x = NPC[npc->type].left_x; rect.y = NPC[npc->type].left_y;
+			} else {
+				rect.x = NPC[npc->type].right_x; rect.y = NPC[npc->type].right_y;
+			}
+			rect.width = NPC[npc->type].w; rect.height = NPC[npc->type].h;
+
+			enemy = f->npcs->GetSubBitmap(rect);
+
+			dc.DrawBitmap(enemy, p, true);
+		}
+		
+
+		// Draw selected prop
+		if(f->npc_selected != -1) {
+			wxRect r;
+
+			npc = f->level->npcs->at(f->npc_selected);
+			r.x = npc->position.x;
+			r.y = npc->position.y;
+			r.width = NPC[npc->type].w;
+			r.height = NPC[npc->type].h;
+
+			dc.SetPen(wxPen(wxColor(0x88, 0x88, 0xff), 2));
+			dc.SetBrush(*wxTRANSPARENT_BRUSH);
+			dc.DrawRectangle(r);
 		}
 	}
 }
@@ -374,6 +485,8 @@ void MainFrame::LevelNew() {
 
 		tile_selected = -1;
 		prop_selected = -1;
+		powerup_selected = -1;
+		npc_selected = -1;
 		
 		level_modified = false;
 
@@ -403,6 +516,8 @@ void MainFrame::LevelOpen() {
 
 		tile_selected = -1;
 		prop_selected = -1;
+		powerup_selected = -1;
+		npc_selected = -1;
 		
 		level_modified = false;
 
@@ -437,6 +552,8 @@ void MainFrame::LevelClose() {
 	tilepanel->setTile(-1);
 
 	propspanel->setLevel(0);
+	powerupspanel->setLevel(0);
+	npcspanel->setLevel(0);
 
 	delete level;
 	level = 0;
@@ -474,6 +591,13 @@ void MainFrame::LevelOptions() {
 		dialog.GetMeta(meta);
 
 		memcpy(&level->meta, &meta, sizeof(LEVEL_META));
+		
+		wxString title;
+
+		title = _("Smash Battle - level editor [");
+		title.Append(wxString::FromAscii(level->meta.name)).Append(_("]"));
+
+		this->SetTitle(title);
 				
 		LevelLoadBitmaps();
 
@@ -569,6 +693,8 @@ void MainFrame::LevelLoadBitmaps() {
 	tilepanel->setTile(-1);
 
 	propspanel->setLevel(level);
+	powerupspanel->setLevel(level);
+	npcspanel->setLevel(level);
 }
 
 void MainFrame::TileCopy() {
@@ -601,6 +727,16 @@ void MainFrame::OnToggleProps(wxCommandEvent &event) {
 
 void MainFrame::OnTogglePStarts(wxCommandEvent &event) {
 	MainFrame::instance->show_pstarts = event.IsChecked();
+	MainFrame::instance->display->Refresh();
+}
+
+void MainFrame::OnTogglePowerups(wxCommandEvent &event) {
+	MainFrame::instance->show_powerups = event.IsChecked();
+	MainFrame::instance->display->Refresh();
+}
+
+void MainFrame::OnToggleNPCs(wxCommandEvent &event) {
+	MainFrame::instance->show_npcs = event.IsChecked();
 	MainFrame::instance->display->Refresh();
 }
 

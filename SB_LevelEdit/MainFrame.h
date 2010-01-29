@@ -17,7 +17,7 @@ struct Powerup {
 	int y;
 };
 
-struct NPC {
+struct Npc {
 	int id;
 	wxString name;
 	int w;
@@ -39,7 +39,7 @@ public:
 	static const Powerup POWERUP[];
 	
 	static const int NPCCount;
-	static const NPC NPC[];
+	static const Npc NPC[];
 	
 	bool level_modified;
 

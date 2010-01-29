@@ -34,7 +34,7 @@ const Powerup MainFrame::POWERUP[MainFrame::PowerupCount] = {
 };
 
 const int MainFrame::NPCCount = 1;
-const NPC MainFrame::NPC[MainFrame::NPCCount] = {
+const Npc MainFrame::NPC[MainFrame::NPCCount] = {
 	{L_NPC_CHICK, _("Small chick"), 24, 26, 0, 0, 24, 0},
 };
 

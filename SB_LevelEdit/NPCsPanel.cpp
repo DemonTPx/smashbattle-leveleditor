@@ -54,7 +54,7 @@ void NPCsPanel::RefreshNPCs() {
 	for(unsigned int i = 0; i < level->npcs->size(); i++) {
 		npc = *level->npcs->at(i);
 		str = wxString::Format(_("%dx%d %s %s"),
-			npc.position.x, npc.position.y, npc.move_direction == -1 ? _("L") : _("R"), MainFrame::NPC[npc.type].name);
+			npc.position.x, npc.position.y, npc.move_direction == -1 ? _("L") : _("R"), MainFrame::NPC[npc.type].name.c_str());
 		lstNPCs->Append(str);
 	}
 
@@ -85,7 +85,7 @@ void NPCsPanel::OnBtnAdd(wxCommandEvent &event) {
 		level->npcs->push_back(npc);
 		
 		lstNPCs->Append(wxString::Format(_("%dx%d %s %s"),
-			npc->position.x, npc->position.y, npc->move_direction == -1 ? _("L") : _("R"), MainFrame::NPC[npc->type].name));
+			npc->position.x, npc->position.y, npc->move_direction == -1 ? _("L") : _("R"), MainFrame::NPC[npc->type].name.c_str()));
 		lstNPCs->Select(lstNPCs->GetCount() - 1);
 		
 		MainFrame::instance->npc_selected = lstNPCs->GetSelection();
@@ -112,7 +112,7 @@ void NPCsPanel::OnBtnChg(wxCommandEvent &event) {
 		dialog.GetNPC(*npc);
 		
 		lstNPCs->SetString(idx, wxString::Format(_("%dx%d %s %s"),
-			npc->position.x, npc->position.y, npc->move_direction == -1 ? _("L") : _("R"), MainFrame::NPC[npc->type].name));
+			npc->position.x, npc->position.y, npc->move_direction == -1 ? _("L") : _("R"), MainFrame::NPC[npc->type].name.c_str()));
 	
 		MainFrame::instance->level_modified = true;
 		MainFrame::instance->Refresh();

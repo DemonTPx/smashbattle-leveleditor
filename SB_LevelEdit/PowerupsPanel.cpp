@@ -54,7 +54,7 @@ void PowerupsPanel::RefreshPowerups() {
 	for(unsigned int i = 0; i < level->powerups->size(); i++) {
 		powerup = *level->powerups->at(i);
 		str = wxString::Format(_("%dx%d %s"),
-			powerup.position.x, powerup.position.y, MainFrame::POWERUP[powerup.type].name);
+			powerup.position.x, powerup.position.y, MainFrame::POWERUP[powerup.type].name.c_str());
 		lstPowerups->Append(str);
 	}
 
@@ -85,7 +85,7 @@ void PowerupsPanel::OnBtnAdd(wxCommandEvent &event) {
 		level->powerups->push_back(p);
 		
 		lstPowerups->Append(wxString::Format(_("%dx%d %s"),
-			p->position.x, p->position.y, MainFrame::POWERUP[p->type].name));
+			p->position.x, p->position.y, MainFrame::POWERUP[p->type].name.c_str()));
 		lstPowerups->Select(lstPowerups->GetCount() - 1);
 		
 		MainFrame::instance->powerup_selected = lstPowerups->GetSelection();
@@ -112,7 +112,7 @@ void PowerupsPanel::OnBtnChg(wxCommandEvent &event) {
 		dialog.GetPowerup(*p);
 		
 		lstPowerups->SetString(idx, wxString::Format(_("%dx%d %s"),
-			p->position.x, p->position.y, MainFrame::POWERUP[p->type].name));
+			p->position.x, p->position.y, MainFrame::POWERUP[p->type].name.c_str()));
 	
 		MainFrame::instance->level_modified = true;
 		MainFrame::instance->Refresh();

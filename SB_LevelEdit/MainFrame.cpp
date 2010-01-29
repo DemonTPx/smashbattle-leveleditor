@@ -22,9 +22,15 @@
 
 MainFrame * MainFrame::instance = 0;
 	
-const int MainFrame::PowerupCount = 1;
+const int MainFrame::PowerupCount = 7;
 const Powerup MainFrame::POWERUP[MainFrame::PowerupCount] = {
 	{L_PU_HEALTH, _("Healthpack"), 16, 16, 0, 0},
+	{L_PU_AMMO,	_("Ammo"), 16, 16, 32, 0},
+	{L_PU_DOUBLEDAMAGE, _("Double damage"), 16, 16, 48, 0},
+	{L_PU_INSTANTKILL, _("Instant kill"), 16, 16, 64, 0},
+	{L_PU_BOMB, _("Bomb"), 16, 16, 16, 0},
+	{L_PU_AIRSTRIKE, _("Airstrike"), 16, 16, 80, 0},
+	{L_PU_LASERBEAM, _("Laserbeam"), 16, 16, 112, 0},
 };
 
 const int MainFrame::NPCCount = 1;

@@ -18,10 +18,12 @@ protected:
 	wxStaticText * lblPosition;
 	wxStaticText * lblDirection;
 
-	wxTextCtrl * txtType;
+	wxChoice * cmbType;
+
 	wxTextCtrl * txtX;
 	wxTextCtrl * txtY;
-	wxTextCtrl * txtDirection;
+
+	wxChoice * cmbDirection;
 
 	wxButton * btnOK;
 	wxButton * btnCancel;

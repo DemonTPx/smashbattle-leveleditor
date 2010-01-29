@@ -4,6 +4,7 @@
 #	include "wx/wx.h"
 #endif
 
+#include "MainFrame.h"
 #include "PowerupDialog.h"
 
 PowerupDialog * PowerupDialog::instance = NULL;
@@ -19,15 +20,18 @@ PowerupDialog::~PowerupDialog() {
 }
 
 void PowerupDialog::InitializeComponents() {
-	SetClientSize(130, 95);
+	SetClientSize(150, 95);
 
 	// Static text
 	lblType = new wxStaticText(this, wxID_ANY, _("Type:"), wxPoint(5, 5), wxSize(50, 20));
 	lblPosition = new wxStaticText(this, wxID_ANY, _("Position:"), wxPoint(5, 30), wxSize(50, 20));
 
 	// Input fields
-	txtType = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 5), wxSize(30, 20));
-	txtType->SetMaxLength(3);
+	cmbType = new wxChoice(this, wxID_ANY, wxPoint(60, 5), wxSize(85, 20));
+	for(int i = 0; i < MainFrame::PowerupCount; i++) {
+		cmbType->Append(MainFrame::POWERUP[i].name);
+	}
+	cmbType->Select(0);
 
 	txtX = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 30), wxSize(30, 20));
 	txtX->SetMaxLength(3);
@@ -35,9 +39,9 @@ void PowerupDialog::InitializeComponents() {
 	txtY->SetMaxLength(3);
 
 	// Buttons
-	btnOK = new wxButton(this, wxID_OK, _("&Save"), wxPoint(20, 60), wxSize(50, 30));
+	btnOK = new wxButton(this, wxID_OK, _("&Save"), wxPoint(40, 60), wxSize(50, 30));
 	btnOK->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(75, 60), wxSize(50, 30));
+	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(95, 60), wxSize(50, 30));
 }
 
 void PowerupDialog::GetPowerup(LEVEL_POWERUP &powerup) {
@@ -45,8 +49,7 @@ void PowerupDialog::GetPowerup(LEVEL_POWERUP &powerup) {
 	
 	memset(&powerup, 0, sizeof(LEVEL_POWERUP));
 
-	txtType->GetValue().ToLong(&l);
-	powerup.type = (int)l;
+	powerup.type = cmbType->GetSelection();
 
 	txtX->GetValue().ToLong(&l);
 	powerup.position.x = (int)l;
@@ -55,7 +58,7 @@ void PowerupDialog::GetPowerup(LEVEL_POWERUP &powerup) {
 }
 
 void PowerupDialog::SetPowerup(LEVEL_POWERUP &powerup) {
-	txtType->SetValue(wxString::Format(_("%d"), powerup.type));
+	cmbType->SetSelection(powerup.type);
 	txtX->SetValue(wxString::Format(_("%d"), powerup.position.x));
 	txtY->SetValue(wxString::Format(_("%d"), powerup.position.y));
 }

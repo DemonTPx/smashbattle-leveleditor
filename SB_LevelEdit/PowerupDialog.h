@@ -17,7 +17,8 @@ protected:
 	wxStaticText * lblType;
 	wxStaticText * lblPosition;
 
-	wxTextCtrl * txtType;
+	wxChoice * cmbType;
+
 	wxTextCtrl * txtX;
 	wxTextCtrl * txtY;
 

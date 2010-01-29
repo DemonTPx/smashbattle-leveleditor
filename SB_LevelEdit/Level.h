@@ -100,7 +100,7 @@ struct LEVEL_MISSION {
 
 enum {
 	L_PU_HEALTH,
-	L_PU_BULLET,
+	L_PU_AMMO,
 	L_PU_DOUBLEDAMAGE,
 	L_PU_INSTANTKILL,
 	L_PU_BOMB,
@@ -142,7 +142,6 @@ struct LEVEL_NPC_DISPENSER {
 	LEVEL_POINT position;
 	int rate; // chance per frame; 60 is ~1 per second
 	int max; // maximum NPCs to dispence
-
 };
 
 class Level

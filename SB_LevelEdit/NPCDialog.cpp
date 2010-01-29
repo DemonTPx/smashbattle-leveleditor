@@ -4,6 +4,7 @@
 #	include "wx/wx.h"
 #endif
 
+#include "MainFrame.h"
 #include "NPCDialog.h"
 
 NPCDialog * NPCDialog::instance = NULL;
@@ -19,7 +20,7 @@ NPCDialog::~NPCDialog() {
 }
 
 void NPCDialog::InitializeComponents() {
-	SetClientSize(130, 125);
+	SetClientSize(150, 125);
 
 	// Static text
 	lblType = new wxStaticText(this, wxID_ANY, _("Type:"), wxPoint(5, 5), wxSize(50, 20));
@@ -27,21 +28,26 @@ void NPCDialog::InitializeComponents() {
 	lblDirection = new wxStaticText(this, wxID_ANY, _("Direction:"), wxPoint(5, 55), wxSize(50, 20));
 
 	// Input fields
-	txtType = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 5), wxSize(30, 20));
-	txtType->SetMaxLength(3);
+	cmbType = new wxChoice(this, wxID_ANY, wxPoint(60, 5), wxSize(85, 20));
+	for(int i = 0; i < MainFrame::NPCCount; i++) {
+		cmbType->Append(MainFrame::NPC[i].name);
+	}
+	cmbType->Select(0);
 
 	txtX = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 30), wxSize(30, 20));
 	txtX->SetMaxLength(3);
 	txtY = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(95, 30), wxSize(30, 20));
 	txtY->SetMaxLength(3);
-	
-	txtDirection = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 55), wxSize(30, 20));
-	txtDirection->SetMaxLength(3);
+
+	cmbDirection = new wxChoice(this, wxID_ANY, wxPoint(60, 55), wxSize(85, 20));
+	cmbDirection->Append(_("Left"));
+	cmbDirection->Append(_("Right"));
+	cmbDirection->Select(0);
 
 	// Buttons
-	btnOK = new wxButton(this, wxID_OK, _("&Save"), wxPoint(20, 90), wxSize(50, 30));
+	btnOK = new wxButton(this, wxID_OK, _("&Save"), wxPoint(40, 90), wxSize(50, 30));
 	btnOK->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(75, 90), wxSize(50, 30));
+	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(95, 90), wxSize(50, 30));
 }
 
 void NPCDialog::GetNPC(LEVEL_NPC &npc) {
@@ -49,21 +55,19 @@ void NPCDialog::GetNPC(LEVEL_NPC &npc) {
 	
 	memset(&npc, 0, sizeof(LEVEL_NPC));
 
-	txtType->GetValue().ToLong(&l);
-	npc.type = (int)l;
+	npc.type = cmbType->GetSelection();
 
 	txtX->GetValue().ToLong(&l);
 	npc.position.x = (int)l;
 	txtY->GetValue().ToLong(&l);
 	npc.position.y = (int)l;
 	
-	txtDirection->GetValue().ToLong(&l);
-	npc.move_direction = (int)l;
+	npc.move_direction = cmbDirection->GetSelection() == 0 ? -1 : 1;
 }
 
 void NPCDialog::SetNPC(LEVEL_NPC &npc) {
-	txtType->SetValue(wxString::Format(_("%d"), npc.type));
+	cmbType->SetSelection(npc.type);
 	txtX->SetValue(wxString::Format(_("%d"), npc.position.x));
 	txtY->SetValue(wxString::Format(_("%d"), npc.position.y));
-	txtDirection->SetValue(wxString::Format(_("%d"), npc.move_direction));
+	cmbDirection->SetSelection(npc.move_direction == -1 ? 0 : 1);
 }

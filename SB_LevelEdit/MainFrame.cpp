@@ -8,6 +8,7 @@
 #endif
 
 #include "LevelSettingsDialog.h"
+#include "LevelMissionDialog.h"
 
 #include "MainFrame.h"
 
@@ -21,6 +22,15 @@
 #define PLAYER_H 44
 
 MainFrame * MainFrame::instance = 0;
+
+const int MainFrame::CharacterCount = 20;
+const Character MainFrame::CHARACTER[MainFrame::CharacterCount] = {
+	{_("Bert")}, {_("Jeroen")}, {_("Steven")}, {_("Tedje")},
+	{_("Okke")}, {_("Jeremy")}, {_("Marcel")}, {_("Jay")},
+	{_("Donja")}, {_("Rob")}, {_("Eva")}, {_("Tobias")},
+	{_("Arjan")}, {_("Ruud")}, {_("Peter")}, {_("Berry")},
+	{_("Ton")}, {_("Gijs")}, {_("Rutger")}, {_("Kim")},
+};
 	
 const int MainFrame::PowerupCount = 7;
 const Powerup MainFrame::POWERUP[MainFrame::PowerupCount] = {
@@ -90,20 +100,22 @@ void MainFrame::InitializeComponents()
 
 	toolbar = new wxPanel(this, wxID_ANY, wxPoint(0, 0), wxSize(840, 30));
 
-	btnNew = new wxButton(toolbar, ID_New, _("&New"), wxPoint(0, 0), wxSize(80, 30));
-	btnOpen = new wxButton(toolbar, ID_Open, _("&Open"), wxPoint(80, 0), wxSize(80, 30));
-	btnSave = new wxButton(toolbar, ID_Save, _("&Save"), wxPoint(160, 0), wxSize(80, 30));
-	btnOptions = new wxButton(toolbar, ID_Options, _("&Options"), wxPoint(260, 0), wxSize(80, 30));
+	btnNew = new wxButton(toolbar, ID_New, _("&New"), wxPoint(0, 0), wxSize(70, 30));
+	btnOpen = new wxButton(toolbar, ID_Open, _("&Open"), wxPoint(70, 0), wxSize(70, 30));
+	btnSave = new wxButton(toolbar, ID_Save, _("&Save"), wxPoint(140, 0), wxSize(70, 30));
 
-	btnBackground = new wxToggleButton(toolbar, ID_ToggleBackground, _("&Background"), wxPoint(360, 0), wxSize(80, 30));
+	btnOptions = new wxButton(toolbar, ID_Options, _("&Options"), wxPoint(220, 0), wxSize(70, 30));
+	btnMission = new wxButton(toolbar, ID_Mission, _("&Mission"), wxPoint(290, 0), wxSize(70, 30));
+
+	btnBackground = new wxToggleButton(toolbar, ID_ToggleBackground, _("&Background"), wxPoint(420, 0), wxSize(70, 30));
 	btnBackground->SetValue(true);
-	btnTiles = new wxToggleButton(toolbar, ID_ToggleTiles, _("&Tiles"), wxPoint(440, 0), wxSize(80, 30));
+	btnTiles = new wxToggleButton(toolbar, ID_ToggleTiles, _("&Tiles"), wxPoint(490, 0), wxSize(70, 30));
 	btnTiles->SetValue(true);
-	btnProps = new wxToggleButton(toolbar, ID_ToggleProps, _("&Props"), wxPoint(520, 0), wxSize(80, 30));
+	btnProps = new wxToggleButton(toolbar, ID_ToggleProps, _("&Props"), wxPoint(560, 0), wxSize(70, 30));
 	btnProps->SetValue(true);
-	btnPStarts = new wxToggleButton(toolbar, ID_TogglePStarts, _("Player &starts"), wxPoint(600, 0), wxSize(80, 30));
-	btnPowerups = new wxToggleButton(toolbar, ID_TogglePowerups, _("Power&ups"), wxPoint(680, 0), wxSize(80, 30));
-	btnNPCs = new wxToggleButton(toolbar, ID_ToggleNPCs, _("NP&Cs"), wxPoint(760, 0), wxSize(80, 30));
+	btnPStarts = new wxToggleButton(toolbar, ID_TogglePStarts, _("Player &starts"), wxPoint(630, 0), wxSize(70, 30));
+	btnPowerups = new wxToggleButton(toolbar, ID_TogglePowerups, _("Power&ups"), wxPoint(700, 0), wxSize(70, 30));
+	btnNPCs = new wxToggleButton(toolbar, ID_ToggleNPCs, _("NP&Cs"), wxPoint(770, 0), wxSize(70, 30));
 
 	display = new wxPanel(this, wxID_ANY, wxPoint(0, 30), wxSize(640, 480));
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
@@ -140,6 +152,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_BUTTON(ID_Open, MainFrame::OnOpen)
 	EVT_BUTTON(ID_Save, MainFrame::OnSave)
 	EVT_BUTTON(ID_Options, MainFrame::OnOptions)
+	EVT_BUTTON(ID_Mission, MainFrame::OnMission)
 	EVT_TOGGLEBUTTON(ID_ToggleBackground, MainFrame::OnToggleBackground)
 	EVT_TOGGLEBUTTON(ID_ToggleTiles, MainFrame::OnToggleTiles)
 	EVT_TOGGLEBUTTON(ID_ToggleProps, MainFrame::OnToggleProps)
@@ -468,6 +481,11 @@ void MainFrame::OnOptions(wxCommandEvent &event)
 	LevelOptions();
 }
 
+void MainFrame::OnMission(wxCommandEvent &event)
+{
+	LevelMission();
+}
+
 void MainFrame::LevelNew() {
 	LevelSettingsDialog dialog(this, wxID_ANY);
 	LEVEL_META meta;
@@ -606,6 +624,23 @@ void MainFrame::LevelOptions() {
 		this->SetTitle(title);
 				
 		LevelLoadBitmaps();
+
+		level_modified = true;
+		display->Refresh();
+	}
+}
+
+void MainFrame::LevelMission() {
+	if(level == 0)
+		return;
+
+	LevelMissionDialog dialog(this, wxID_ANY);
+	LEVEL_MISSION mission;
+
+	if(dialog.EditLevel(level->mission) == wxID_OK) {
+		dialog.GetMission(mission);
+		
+		memcpy(&level->mission, &mission, sizeof(LEVEL_MISSION));
 
 		level_modified = true;
 		display->Refresh();

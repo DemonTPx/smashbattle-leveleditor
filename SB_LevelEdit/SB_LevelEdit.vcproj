@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LevelMissionDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\LevelSettingsDialog.cpp"
 				>
 			</File>
@@ -246,6 +250,10 @@
 			</File>
 			<File
 				RelativePath=".\Level.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LevelMissionDialog.h"
 				>
 			</File>
 			<File

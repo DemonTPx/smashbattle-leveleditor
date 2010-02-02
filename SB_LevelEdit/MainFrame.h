@@ -8,6 +8,10 @@
 #include "wx/tglbtn.h"
 #include "wx/notebook.h"
 
+struct Character {
+	wxString name;
+};
+
 struct Powerup {
 	int id;
 	wxString name;
@@ -35,6 +39,9 @@ public:
 	
 	static MainFrame * instance;
 
+	static const int CharacterCount;
+	static const Character CHARACTER[];
+
 	static const int PowerupCount;
 	static const Powerup POWERUP[];
 	
@@ -57,7 +64,9 @@ protected:
 	void OnNew(wxCommandEvent &event);
 	void OnOpen(wxCommandEvent &event);
 	void OnSave(wxCommandEvent &event);
+
 	void OnOptions(wxCommandEvent &event);
+	void OnMission(wxCommandEvent &event);
 
     void OnDisplayPaint(wxPaintEvent &event);
 	void OnDisplayErase(wxEraseEvent &event);
@@ -75,7 +84,10 @@ protected:
 	void LevelOpen();
 	void LevelSave();
 	void LevelClose();
+
 	void LevelOptions();
+	void LevelMission();
+
 	void LevelLoadBitmaps();
 	bool LevelPromptClose();
 
@@ -84,7 +96,9 @@ protected:
 	wxButton * btnNew;
 	wxButton * btnOpen;
 	wxButton * btnSave;
+
 	wxButton * btnOptions;
+	wxButton * btnMission;
 
 	wxToggleButton * btnBackground;
 	wxToggleButton * btnTiles;
@@ -139,6 +153,7 @@ enum {
 	ID_Open,
 	ID_Save,
 	ID_Options,
+	ID_Mission,
 	ID_ToggleBackground,
 	ID_ToggleTiles,
 	ID_ToggleProps,

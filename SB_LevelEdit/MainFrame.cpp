@@ -43,9 +43,11 @@ const Powerup MainFrame::POWERUP[MainFrame::PowerupCount] = {
 	{L_PU_LASERBEAM, _("Laserbeam"), 16, 16, 112, 0},
 };
 
-const int MainFrame::NPCCount = 1;
+const int MainFrame::NPCCount = 3;
 const Npc MainFrame::NPC[MainFrame::NPCCount] = {
 	{L_NPC_CHICK, _("Small chick"), 24, 26, 0, 0, 24, 0},
+	{L_NPC_CANNON, _("Cannon"), 52, 36, 0, 26, 52, 26},
+	{L_NPC_GATLING, _("Gatling gun"), 64, 28, 0, 62, 64, 62},
 };
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size) : wxFrame((wxFrame *) NULL, -1, title, pos, size) 

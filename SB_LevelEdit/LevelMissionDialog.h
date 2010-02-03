@@ -8,6 +8,9 @@ public:
 	~LevelMissionDialog();
 
 	static LevelMissionDialog * instance;
+
+	void OnKillAllTimeGoldUpdated(wxCommandEvent &event);
+	void OnKillAllTimeSilverUpdated(wxCommandEvent &event);
 	
 	void InitializeComponents();
 
@@ -34,6 +37,9 @@ protected:
 	wxTextCtrl * txtBombs;
 	wxTextCtrl * txtKillAllTimeGold;
 	wxTextCtrl * txtKillAllTimeSilver;
+
+	wxStaticText * lblKillAllTimeGoldTime;
+	wxStaticText * lblKillAllTimeSilverTime;
 
 	wxButton * btnSave;
 	wxButton * btnCancel;

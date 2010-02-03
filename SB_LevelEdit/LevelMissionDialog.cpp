@@ -51,7 +51,12 @@ void LevelMissionDialog::InitializeComponents() {
 	txtBombs = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 140), wxSize(100, 20));
 
 	txtKillAllTimeGold = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 170), wxSize(100, 20));
+	txtKillAllTimeGold->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(LevelMissionDialog::OnKillAllTimeGoldUpdated));
 	txtKillAllTimeSilver = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 195), wxSize(100, 20));
+	txtKillAllTimeSilver->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(LevelMissionDialog::OnKillAllTimeSilverUpdated));
+
+	lblKillAllTimeGoldTime = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(225, 170), wxSize(100, 20));
+	lblKillAllTimeSilverTime = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(225, 195), wxSize(100, 20));
 
 	// Buttons
 	btnSave = new wxButton(this, wxID_OK, _("&OK"), wxPoint(220, 230), wxSize(80, 30));
@@ -95,4 +100,30 @@ void LevelMissionDialog::GetMission(LEVEL_MISSION &mission) {
 	mission.kill_all_time_gold = (int)l;
 	txtKillAllTimeSilver->GetValue().ToLong(&l);
 	mission.kill_all_time_silver = (int)l;
+}
+
+void LevelMissionDialog::OnKillAllTimeGoldUpdated(wxCommandEvent &event) {
+	long frames;
+	int min, sec, msec;
+
+	instance->txtKillAllTimeGold->GetValue().ToLong(&frames);
+
+	min = frames / 3600;
+	sec = (frames / 60) % 60;
+	msec = frames % 60;
+
+	instance->lblKillAllTimeGoldTime->SetLabel(wxString::Format(_("%d:%02d.%02d"), min, sec, msec));
+}
+
+void LevelMissionDialog::OnKillAllTimeSilverUpdated(wxCommandEvent &event) {
+	long frames;
+	int min, sec, msec;
+
+	instance->txtKillAllTimeSilver->GetValue().ToLong(&frames);
+
+	min = frames / 3600;
+	sec = (frames / 60) % 60;
+	msec = frames % 60;
+
+	instance->lblKillAllTimeSilverTime->SetLabel(wxString::Format(_("%d:%02d.%02d"), min, sec, msec));
 }

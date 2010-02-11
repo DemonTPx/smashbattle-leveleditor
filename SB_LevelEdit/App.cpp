@@ -14,6 +14,8 @@ bool App::OnInit() {
 	wxSize size;
 
 	mf = new MainFrame(_("Smash Battle - level editor"), wxDefaultPosition, wxDefaultSize);
+	if(!mf->LoadFiles())
+		return false;
 	mf->SetClientSize(840, 510);
 	mf->CenterOnScreen();
 	mf->Show();

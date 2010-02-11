@@ -138,15 +138,35 @@ void MainFrame::InitializeComponents()
 	more->AddPage(powerupspanel, _("Powerups"));
 	more->AddPage(npcspanel, _("NPCs"));
 
-	pstarts = new wxBitmap(_("pstarts.bmp"), wxBITMAP_TYPE_BMP);
-	powerups = new wxBitmap(_("powerups.bmp"), wxBITMAP_TYPE_BMP);
-	npcs = new wxBitmap(_("npcs.bmp"), wxBITMAP_TYPE_BMP);
-	
+	pstarts = NULL;
+	powerups = NULL;
+	npcs = NULL;
+}
+
+bool MainFrame::LoadFiles() {
+	pstarts = new wxBitmap();
+	if(!pstarts->LoadFile(_("pstarts.bmp"), wxBITMAP_TYPE_BMP)) {
+		wxMessageBox(_("Could not load pstarts.bmp"), _("Error loading bitmap"), wxICON_ERROR | wxCENTRE);
+		return false;
+	}
+	powerups = new wxBitmap();
+	if(!powerups->LoadFile(_("powerups.bmp"), wxBITMAP_TYPE_BMP)) {
+		wxMessageBox(_("Could not load powerups.bmp"), _("Error loading bitmap"), wxICON_ERROR | wxCENTRE);
+		return false;
+	}
+	npcs = new wxBitmap();
+	if(!npcs->LoadFile(_("npcs.bmp"), wxBITMAP_TYPE_BMP)) {
+		wxMessageBox(_("Could not load npcs.bmp"), _("Error loading bitmap"), wxICON_ERROR | wxCENTRE);
+		return false;
+	}
+
 	wxColour mask_colour;
 
 	mask_colour = wxColour(0, 0xff, 0xff);
 	mask_npcs = new wxMask(*npcs, mask_colour);
 	npcs->SetMask(mask_npcs);
+
+	return true;
 }
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)

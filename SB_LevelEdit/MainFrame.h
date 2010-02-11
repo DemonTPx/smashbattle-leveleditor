@@ -56,6 +56,8 @@ public:
 	
 	void InitializeComponents();
 
+	bool LoadFiles();
+
 	void TileCopy();
 	void TilePaste();
 protected:

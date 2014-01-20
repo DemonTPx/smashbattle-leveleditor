@@ -1,3 +1,4 @@
+#include <cstring>
 #include "zlib.h"
 #include "Level.h"
 

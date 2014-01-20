@@ -1,6 +1,6 @@
 #pragma once
 
-#include "wx\scrolwin.h"
+#include "wx/scrolwin.h"
 
 #include <vector>
 

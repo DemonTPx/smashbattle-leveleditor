@@ -1,0 +1,13 @@
+Release/
+Debug/
+/lib/
+/include/
+/*.sdf
+/*.suo
+/*.sdf
+/*.opensdf
+*.o
+*~
+*.cmake
+*.vcxproj.filters
+*.vcxproj.user

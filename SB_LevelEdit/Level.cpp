@@ -106,7 +106,9 @@ void Level::load(const char * filename) {
 	gzread(file, &tile, sizeof(tile));
 
 	while(!gzeof(file)) {
-		gzread(file, &block_id, sizeof(block_id));
+		if (!gzread(file, &block_id, sizeof(block_id))) {
+			break;
+		}
 		switch(block_id) {
 			// Player starts
 			case LEVEL_BLOCK_PSTART:

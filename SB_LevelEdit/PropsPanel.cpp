@@ -19,12 +19,23 @@ PropsPanel::PropsPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, cons
 }
 
 void PropsPanel::InitializeComponents() {
-	lstProps = new wxListBox(this, wxID_ANY, wxPoint(5, 5), wxSize(180, 95));
+	lstProps = new wxListBox(this, wxID_ANY);
 	lstProps->Connect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(PropsPanel::OnLstPropSelected));
 
-	btnAdd = new wxButton(this, ID_btnAdd, _("add"), wxPoint(5, 105), wxSize(55, 20));
-	btnChg = new wxButton(this, ID_btnChg, _("edit"), wxPoint(65, 105), wxSize(55, 20));
-	btnRem = new wxButton(this, ID_btnRem, _("delete"), wxPoint(125, 105), wxSize(55, 20));
+	btnAdd = new wxButton(this, ID_btnAdd, _("Add"));
+	btnChg = new wxButton(this, ID_btnChg, _("Edit"));
+	btnRem = new wxButton(this, ID_btnRem, _("Delete"));
+
+	wxBoxSizer * toolbar = new wxBoxSizer(wxHORIZONTAL);
+	toolbar->Add(btnAdd, 1, wxEXPAND);
+	toolbar->Add(btnChg, 1, wxEXPAND);
+	toolbar->Add(btnRem, 1, wxEXPAND);
+
+	wxBoxSizer * panel = new wxBoxSizer(wxVERTICAL);
+	panel->Add(lstProps, 1, wxALL | wxEXPAND, 5);
+	panel->Add(toolbar, 0, wxALL | wxEXPAND, 5);
+
+	SetSizerAndFit(panel);
 }
 
 BEGIN_EVENT_TABLE(PropsPanel, wxPanel)

@@ -42,9 +42,9 @@ file(GLOB_RECURSE SB_LevelEdit_HEADERS "SB_LevelEdit/*.h")
  
 # Here we define the executable leveleditor.exe or leveleditor on other systems
 # the above paths and defines will be used in this build
-add_executable(SB_LevelEdit/leveleditor WIN32 ${SB_LevelEdit_SOURCES})
+add_executable(leveleditor WIN32 ${SB_LevelEdit_SOURCES})
  
 # We add to our target 'leveleditor' the wxWidgets libraries. These are
 # set for us by the find script. If you need other libraries, you
 # can add them here as well. 
-target_link_libraries(SB_LevelEdit/leveleditor ${wxWidgets_LIBRARIES} ${ZLIB_LIBRARIES})
+target_link_libraries(leveleditor ${wxWidgets_LIBRARIES} ${ZLIB_LIBRARIES})

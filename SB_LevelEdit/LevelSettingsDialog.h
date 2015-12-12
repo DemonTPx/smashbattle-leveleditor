@@ -21,16 +21,6 @@ public:
 
 	wxString filename;
 protected:
-	wxStaticText * lblName;
-	wxStaticText * lblAuthor;
-	wxStaticText * lblType;
-	wxStaticText * lblMaxPlayers;
-	wxStaticText * lblBackgroundColor;
-	wxStaticText * lblFileTiles;
-	wxStaticText * lblFileBackground;
-	wxStaticText * lblFileProps;
-	wxStaticText * lblFileMusic;
-
 	wxTextCtrl * txtName;
 	wxTextCtrl * txtAuthor;
 	wxChoice * cmbType;
@@ -40,7 +30,4 @@ protected:
 	wxChoice * cmbFileBackground;
 	wxChoice * cmbFileProps;
 	wxChoice * cmbFileMusic;
-
-	wxButton * btnSave;
-	wxButton * btnCancel;
 };

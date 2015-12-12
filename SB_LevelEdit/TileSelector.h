@@ -17,9 +17,11 @@ protected:
 
 	void OnPaint(wxPaintEvent &event);
 	void OnClick(wxMouseEvent &event);
+	void OnSize(wxSizeEvent &event);
 
 	wxBitmap * tiles;
 	int tiles_max;
+	int tiles_per_line;
 
 	int selected;
 };

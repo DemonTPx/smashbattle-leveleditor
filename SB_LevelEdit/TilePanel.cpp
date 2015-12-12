@@ -22,24 +22,41 @@ TilePanel::TilePanel(wxWindow* parent, wxWindowID id, const wxPoint& pos, const 
 }
 
 void TilePanel::InitializeComponents() {
-	tileSelector = new TileSelector(this, wxID_ANY, wxPoint(5, 0), wxSize(190, 170));
+	tileSelector = new TileSelector(this, wxID_ANY);
 
-	lblHP = new wxStaticText(this, wxID_ANY, _("HP: (infinite)"), wxPoint(5, 175), wxSize(190, 20));
-	sliderHP = new wxSlider(this, ID_sliderHP, 50, 0, 250, wxPoint(65, 175), wxSize(135, 20));
+	lblHP = new wxStaticText(this, wxID_ANY, _("HP: (infinite)"));
+	sliderHP = new wxSlider(this, ID_sliderHP, 50, 0, 250);
 	sliderHP->Connect(wxEVT_COMMAND_SLIDER_UPDATED, wxScrollEventHandler(TilePanel::OnSliderHP));
 
-	chkIndestructible = new wxCheckBox(this, ID_chkIndestructible, _("Indestructible"), wxPoint(5, 195), wxSize(190, 20));
-	chkBouncable = new wxCheckBox(this, ID_chkBouncable, _("Bouncable"), wxPoint(5, 215), wxSize(190, 20));
-	chkShowInPreview = new wxCheckBox(this, ID_chkShowInPreview, _("Show in preview"), wxPoint(5, 235), wxSize(190, 20));
+	chkIndestructible = new wxCheckBox(this, ID_chkIndestructible, _("Indestructible"));
+	chkBouncable = new wxCheckBox(this, ID_chkBouncable, _("Bouncable"));
+	chkShowInPreview = new wxCheckBox(this, ID_chkShowInPreview, _("Show in preview"));
 
-	btnCopy = new wxButton(this, ID_btnCopy, _("&Copy"), wxPoint(5, 260), wxSize(90, 25));
+	btnCopy = new wxButton(this, ID_btnCopy, _("&Copy"));
 	btnCopy->Disable();
 
-	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"), wxPoint(105, 260), wxSize(90, 25));
+	btnPaste = new wxButton(this, ID_btnPaste, _("&Paste"));
 	btnPaste->Disable();
 
-	btnPlayerStart = new wxButton(this, ID_btnPlayerStart, _("Player start"), wxPoint(5, 290), wxSize(190, 25));
+	btnPlayerStart = new wxButton(this, ID_btnPlayerStart, _("Player start"));
 	btnPlayerStart->Disable();
+
+	wxBoxSizer * copyPasteSizer = new wxBoxSizer(wxHORIZONTAL);
+	copyPasteSizer->Add(btnCopy, 1, wxEXPAND);
+	copyPasteSizer->Add(btnPaste, 1, wxEXPAND);
+
+	wxBoxSizer * sizer = new wxBoxSizer(wxVERTICAL);
+
+	sizer->Add(tileSelector, 1, wxEXPAND | wxALL, 5);
+	sizer->Add(lblHP, 0, wxLEFT | wxRIGHT, 5);
+	sizer->Add(sliderHP, 0, wxEXPAND | wxLEFT | wxRIGHT, 5);
+	sizer->Add(chkIndestructible, 0, wxLEFT | wxRIGHT | wxTOP, 5);
+	sizer->Add(chkBouncable, 0, wxLEFT | wxRIGHT, 5);
+	sizer->Add(chkShowInPreview, 0, wxLEFT | wxRIGHT, 5);
+	sizer->Add(copyPasteSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 5);
+	sizer->Add(btnPlayerStart, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
+
+	SetSizerAndFit(sizer);
 }
 
 BEGIN_EVENT_TABLE(TilePanel, wxPanel)

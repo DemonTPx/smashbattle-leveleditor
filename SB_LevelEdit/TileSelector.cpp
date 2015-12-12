@@ -10,7 +10,6 @@
 #include "MainFrame.h"
 #include "TileSelector.h"
 
-#define TILES_PER_LINE 5
 #define TILE_SPACING 2
 #define BORDER 5
 
@@ -21,6 +20,7 @@ TileSelector::TileSelector(wxWindow* parent, wxWindowID id, const wxPoint& pos, 
 
 	tiles_max = 0;
 	tiles = 0;
+	tiles_per_line = (size.x - (BORDER * 2)) / TILE_W;
 }
 
 void TileSelector::setTiles(wxBitmap * t) {
@@ -48,12 +48,13 @@ int TileSelector::GetSelected() {
 BEGIN_EVENT_TABLE(TileSelector, wxScrolledWindow)
 	EVT_PAINT(TileSelector::OnPaint)
 	EVT_LEFT_DOWN(TileSelector::OnClick)
+	EVT_SIZE(TileSelector::OnSize)
 END_EVENT_TABLE()
 
 void TileSelector::OnPaint(wxPaintEvent &event) {
 	wxPaintDC dc(this);
 
-	if(tiles == 0)
+	if(tiles == 0 || tiles_per_line == 0)
 		return;
 
 	wxBitmap tile;
@@ -67,8 +68,8 @@ void TileSelector::OnPaint(wxPaintEvent &event) {
 		rect.width = TILE_W;
 		rect.height = TILE_H;
 
-		p.x = BORDER + (i % TILES_PER_LINE) * (TILE_W + (TILE_SPACING * 2));
-		p.y = BORDER + (i / TILES_PER_LINE) * (TILE_H + (TILE_SPACING * 2));
+		p.x = BORDER + (i % tiles_per_line) * (TILE_W + (TILE_SPACING * 2));
+		p.y = BORDER + (i / tiles_per_line) * (TILE_H + (TILE_SPACING * 2));
 
 		if(selected == i) {
 			wxSize size;
@@ -93,7 +94,7 @@ void TileSelector::OnClick(wxMouseEvent &event) {
 	x = event.GetX();
 	y = event.GetY();
 
-	if(x < BORDER || x > (BORDER + ((TILE_W + (TILE_SPACING * 2)) * TILES_PER_LINE))) {
+	if(x < BORDER || x > (BORDER + ((TILE_W + (TILE_SPACING * 2)) * tiles_per_line))) {
 		selected = -1;
 	} else if(y < BORDER) {
 		selected = -1;
@@ -101,7 +102,7 @@ void TileSelector::OnClick(wxMouseEvent &event) {
 		x = (x - BORDER) / (TILE_W + (TILE_SPACING * 2));
 		y = (y - BORDER) / (TILE_H + (TILE_SPACING * 2));
 
-		selected = (y * TILES_PER_LINE) + x;
+		selected = (y * tiles_per_line) + x;
 
 		if(selected >= tiles_max) {
 			selected = -1;
@@ -112,4 +113,10 @@ void TileSelector::OnClick(wxMouseEvent &event) {
 
 	MainFrame::instance->Refresh();
 	Refresh();
+}
+
+void TileSelector::OnSize(wxSizeEvent &event) {
+	tiles_per_line = (event.GetSize().x - (BORDER * 2)) / (TILE_W + (TILE_SPACING * 2));
+
+	wxScrolledWindow::OnSize(event);
 }

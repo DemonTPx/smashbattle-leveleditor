@@ -10,7 +10,7 @@
 
 LevelSettingsDialog * LevelSettingsDialog::instance = NULL;
 
-LevelSettingsDialog::LevelSettingsDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("New level"), pos, wxSize(400, 325)){
+LevelSettingsDialog::LevelSettingsDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("New level"), pos){
 	instance = this;
 
 	InitializeComponents();
@@ -21,47 +21,64 @@ LevelSettingsDialog::~LevelSettingsDialog() {
 }
 
 void LevelSettingsDialog::InitializeComponents() {
-	// Static text
-	lblName = new wxStaticText(this, wxID_ANY, _("Name:"), wxPoint(10, 5), wxSize(100, 20));
-	lblAuthor = new wxStaticText(this, wxID_ANY, _("Author:"), wxPoint(10, 30), wxSize(100, 20));
+	wxFlexGridSizer *gridSizer = new wxFlexGridSizer(2);
 
-	lblType = new wxStaticText(this, wxID_ANY, _("Type:"), wxPoint(10, 65), wxSize(100, 20));
-	lblMaxPlayers = new wxStaticText(this, wxID_ANY, _("Max Players:"), wxPoint(10, 90), wxSize(100, 20));
-
-	lblBackgroundColor = new wxStaticText(this, wxID_ANY, _("Background color:"), wxPoint(10, 125), wxSize(100, 20));
-	lblFileBackground = new wxStaticText(this, wxID_ANY, _("Background file:"), wxPoint(10, 150), wxSize(100, 20));
-	lblFileTiles = new wxStaticText(this, wxID_ANY, _("Tiles file:"), wxPoint(10, 175), wxSize(100, 20));
-	lblFileProps = new wxStaticText(this, wxID_ANY, _("Props file:"), wxPoint(10, 200), wxSize(100, 20));
-	lblFileProps = new wxStaticText(this, wxID_ANY, _("Music file:"), wxPoint(10, 225), wxSize(100, 20));
-
-	// Input fields
-	txtName = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 5), wxSize(270, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Name:")));
+	txtName = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtName->SetMaxLength(20);
+	gridSizer->Add(txtName, 1, wxEXPAND);
 
-	txtAuthor = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 30), wxSize(270, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Author:")));
+	txtAuthor = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtAuthor->SetMaxLength(20);
+	gridSizer->Add(txtAuthor, 1, wxEXPAND);
 
-	cmbType = new wxChoice(this, wxID_ANY, wxPoint(120, 65), wxSize(270, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Type:")));
+	cmbType = new wxChoice(this, wxID_ANY);
 	cmbType->Append(_("Single player"));
 	cmbType->Append(_("Multiplayer"));
 	cmbType->Select(1);
+	gridSizer->Add(cmbType, 1, wxEXPAND);
 
-	cmbMaxPlayers = new wxChoice(this, wxID_ANY, wxPoint(120, 90), wxSize(100, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Max Players:")));
+	cmbMaxPlayers = new wxChoice(this, wxID_ANY);
 	cmbMaxPlayers->Append(_("2"));
 	cmbMaxPlayers->Append(_("3"));
 	cmbMaxPlayers->Append(_("4"));
 	cmbMaxPlayers->Select(2);
+	gridSizer->Add(cmbMaxPlayers, 1, wxEXPAND);
 
-	clrBackground = new wxColourPickerCtrl(this, wxID_ANY, *wxBLACK, wxPoint(120, 125), wxSize(25, 25));
-	cmbFileBackground = new wxChoice(this, wxID_ANY, wxPoint(120, 150), wxSize(270, 20));
-	cmbFileTiles = new wxChoice(this, wxID_ANY, wxPoint(120, 175), wxSize(270, 20));
-	cmbFileProps = new wxChoice(this, wxID_ANY, wxPoint(120, 200), wxSize(270, 20));
-	cmbFileMusic = new wxChoice(this, wxID_ANY, wxPoint(120, 225), wxSize(270, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Background color:")));
+	clrBackground = new wxColourPickerCtrl(this, wxID_ANY, *wxBLACK);
+	gridSizer->Add(clrBackground);
 
-	// Buttons
-	btnSave = new wxButton(this, wxID_OK, _("&OK"), wxPoint(220, 260), wxSize(80, 30));
-	btnSave->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(310, 260), wxSize(80, 30));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Background file:")));
+	cmbFileBackground = new wxChoice(this, wxID_ANY);
+	gridSizer->Add(cmbFileBackground, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Tiles file:")));
+	cmbFileTiles = new wxChoice(this, wxID_ANY);
+	gridSizer->Add(cmbFileTiles, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Props file:")));
+	cmbFileProps = new wxChoice(this, wxID_ANY);
+	gridSizer->Add(cmbFileProps, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Music file:")));
+	cmbFileMusic = new wxChoice(this, wxID_ANY);
+	gridSizer->Add(cmbFileMusic, 1, wxEXPAND);
+
+	gridSizer->AddGrowableCol(1, 1);
+
+	wxStdDialogButtonSizer * buttonSizer = CreateStdDialogButtonSizer(wxOK | wxCANCEL);
+
+	wxBoxSizer * sizer = new wxBoxSizer(wxVERTICAL);
+
+	sizer->Add(gridSizer, 1, wxEXPAND | wxALL, 5);
+	sizer->Add(buttonSizer, 0, wxALL | wxALIGN_RIGHT, 5);
+	sizer->SetMinSize(400, 0);
+
+	SetSizerAndFit(sizer);
 }
 
 int LevelSettingsDialog::NewLevel() {

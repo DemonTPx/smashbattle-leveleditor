@@ -15,6 +15,7 @@ public:
 	void setLevel(Level * l, wxBitmap * tiles);
 	void setTile(int t);
 	void saveTile();
+	void enablePasteButton();
 protected:
 	Level * level;
 	int tile;

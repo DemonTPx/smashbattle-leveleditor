@@ -16,12 +16,6 @@ public:
 
 	int GetPlayer();
 protected:
-	wxStaticText * lblPlayer;
-	wxStaticText * lblDirection;
-	
 	wxChoice * cmbPlayer;
 	wxChoice * cmbDirection;
-	
-	wxButton * btnOK;
-	wxButton * btnCancel;
 };

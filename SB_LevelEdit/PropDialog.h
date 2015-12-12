@@ -14,16 +14,6 @@ public:
 	void GetProp(LEVEL_PROP &prop);
 	void SetProp(LEVEL_PROP &prop);
 protected:
-	wxStaticText * lblSource;
-	wxStaticText * lblSrcX;
-	wxStaticText * lblSrcY;
-	wxStaticText * lblSrcW;
-	wxStaticText * lblSrcH;
-	
-	wxStaticText * lblDest;
-	wxStaticText * lblDstX;
-	wxStaticText * lblDstY;
-
 	wxTextCtrl * txtSrcX;
 	wxTextCtrl * txtSrcY;
 	wxTextCtrl * txtSrcW;
@@ -31,7 +21,4 @@ protected:
 	
 	wxTextCtrl * txtDstX;
 	wxTextCtrl * txtDstY;
-
-	wxButton * btnOK;
-	wxButton * btnCancel;
 };

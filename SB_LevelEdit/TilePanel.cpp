@@ -143,7 +143,7 @@ void TilePanel::OnChkShowInPreview(wxCommandEvent &event) {
 
 void TilePanel::OnBtnCopy(wxCommandEvent &event) {
 	MainFrame::instance->TileCopy();
-	btnPaste->Enable();
+	enablePasteButton();
 }
 
 void TilePanel::OnBtnPaste(wxCommandEvent &event) {
@@ -198,4 +198,8 @@ void TilePanel::UpdateLabels() {
 	label << _(")");
 
 	t->lblHP->SetLabel(label);
+}
+
+void TilePanel::enablePasteButton() {
+	btnPaste->Enable();
 }

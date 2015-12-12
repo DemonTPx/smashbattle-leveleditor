@@ -8,7 +8,7 @@
 
 PlayerStartDialog * PlayerStartDialog::instance = NULL;
 
-PlayerStartDialog::PlayerStartDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("Set player start"), pos, wxSize(200, 185)){
+PlayerStartDialog::PlayerStartDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("Set player start"), pos) {
 	instance = this;
 
 	InitializeComponents();
@@ -19,26 +19,30 @@ PlayerStartDialog::~PlayerStartDialog() {
 }
 
 void PlayerStartDialog::InitializeComponents() {
-	SetClientSize(195, 100);
-	
-	// Static text
-	lblPlayer = new wxStaticText(this, wxID_ANY, _("Player:"), wxPoint(5, 5), wxSize(90, 20));
-	lblDirection = new wxStaticText(this, wxID_ANY, _("Direction:"), wxPoint(5, 30), wxSize(90, 20));
+	wxBoxSizer * sizer = new wxBoxSizer(wxVERTICAL);
 
-	// Input fields
-	cmbPlayer = new wxChoice(this, wxID_ANY, wxPoint(100, 5), wxSize(90, 20));
+	wxGridSizer * gridSizer = new wxGridSizer(2);
+
+	// Static text
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Player:")));
+	cmbPlayer = new wxChoice(this, wxID_ANY);
 	cmbPlayer->Append(_("1"));
 	cmbPlayer->Append(_("2"));
 	cmbPlayer->Append(_("3"));
 	cmbPlayer->Append(_("4"));
-	cmbDirection = new wxChoice(this, wxID_ANY, wxPoint(100, 30), wxSize(90, 20));
+	gridSizer->Add(cmbPlayer, 0, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Direction:")));
+	cmbDirection = new wxChoice(this, wxID_ANY);
 	cmbDirection->Append(_("Left"));
 	cmbDirection->Append(_("Right"));
+	gridSizer->Add(cmbDirection, 0, wxEXPAND);
 
-	// Buttons
-	btnOK = new wxButton(this, wxID_OK, _("&Save"), wxPoint(85, 60), wxSize(50, 30));
-	btnOK->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(140, 60), wxSize(50, 30));
+	sizer->Add(gridSizer, 0, wxEXPAND | wxALL, 5);
+	sizer->Add(CreateStdDialogButtonSizer(wxOK | wxCANCEL), 0, wxALL | wxALIGN_RIGHT, 5);
+	sizer->SetMinSize(220, 0);
+
+	SetSizerAndFit(sizer);
 }
 
 void PlayerStartDialog::SetPlayerStart(LEVEL_PLAYERSTART &pstart) {

@@ -8,7 +8,7 @@
 
 PropDialog * PropDialog::instance = NULL;
 
-PropDialog::PropDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("Prop"), pos, wxSize(200, 185)){
+PropDialog::PropDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("Prop"), pos){
 	instance = this;
 
 	InitializeComponents();
@@ -19,40 +19,53 @@ PropDialog::~PropDialog() {
 }
 
 void PropDialog::InitializeComponents() {
-	SetClientSize(200, 165);
+	wxBoxSizer * sizer = new wxBoxSizer(wxVERTICAL);
 
-	// Static text
-	lblSource = new wxStaticText(this, wxID_ANY, _("Source"), wxPoint(5, 5), wxSize(190, 20));
+	sizer->Add(new wxStaticText(this, wxID_ANY, _("Source")), 0, wxALL, 5);
 
-	lblSrcX = new wxStaticText(this, wxID_ANY, _("X:"), wxPoint(5, 30), wxSize(50, 20));
-	lblSrcY = new wxStaticText(this, wxID_ANY, _("Y:"), wxPoint(105, 30), wxSize(50, 20));
-	lblSrcW = new wxStaticText(this, wxID_ANY, _("Width:"), wxPoint(5, 50), wxSize(50, 20));
-	lblSrcH = new wxStaticText(this, wxID_ANY, _("Height:"), wxPoint(105, 50), wxSize(50, 20));
-	
-	lblDest = new wxStaticText(this, wxID_ANY, _("Destination"), wxPoint(5, 75), wxSize(190, 20));
-	
-	lblDstX = new wxStaticText(this, wxID_ANY, _("X:"), wxPoint(5, 95), wxSize(50, 20));
-	lblDstY = new wxStaticText(this, wxID_ANY, _("Y:"), wxPoint(105, 95), wxSize(50, 20));
+	wxGridSizer * sourceGridSizer = new wxGridSizer(4);
 
-	// Input fields
-	txtSrcX = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 30), wxSize(30, 20));
+	sourceGridSizer->Add(new wxStaticText(this, wxID_ANY, _("X:")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+	txtSrcX = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtSrcX->SetMaxLength(3);
-	txtSrcY = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(160, 30), wxSize(30, 20));
+	sourceGridSizer->Add(txtSrcX);
+
+	sourceGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Y:")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+	txtSrcY = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtSrcY->SetMaxLength(3);
-	txtSrcW = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 50), wxSize(30, 20));
+	sourceGridSizer->Add(txtSrcY);
+
+	sourceGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Width:")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+	txtSrcW = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtSrcW->SetMaxLength(3);
-	txtSrcH = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(160, 50), wxSize(30, 20));
+	sourceGridSizer->Add(txtSrcW);
+
+	sourceGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Height:")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+	txtSrcH = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtSrcH->SetMaxLength(3);
+	sourceGridSizer->Add(txtSrcH);
 
-	txtDstX = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 95), wxSize(30, 20));
+	sizer->Add(sourceGridSizer, 0, wxALL, 5);
+
+	sizer->Add(new wxStaticText(this, wxID_ANY, _("Destination")), 0, wxALL, 5);
+
+	wxGridSizer * destGridSizer = new wxGridSizer(4);
+
+	destGridSizer->Add(new wxStaticText(this, wxID_ANY, _("X:")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+	txtDstX = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtDstX->SetMaxLength(3);
-	txtDstY = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(160, 95), wxSize(30, 20));
-	txtDstY->SetMaxLength(3);
+	destGridSizer->Add(txtDstX);
 
-	// Buttons
-	btnOK = new wxButton(this, wxID_OK, _("&Save"), wxPoint(90, 130), wxSize(50, 30));
-	btnOK->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(145, 130), wxSize(50, 30));
+	destGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Y:")), 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
+	txtDstY = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+	txtDstY->SetMaxLength(3);
+	destGridSizer->Add(txtDstY);
+
+	sizer->Add(destGridSizer, 0, wxALL, 5);
+
+	sizer->Add(CreateStdDialogButtonSizer(wxOK | wxCANCEL), 0, wxALIGN_RIGHT | wxALL, 5);
+
+	SetSizerAndFit(sizer);
 }
 
 void PropDialog::GetProp(LEVEL_PROP &prop) {

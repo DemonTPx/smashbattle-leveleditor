@@ -132,10 +132,10 @@ void MainFrame::InitializeComponents()
 	display->SetFocus();
 
 	more = new wxNotebook(this, wxID_ANY, wxPoint(640, 40), wxSize(500, 480));
+	tilepanel = new TilePanel(more);
 	propspanel = new PropsPanel(more);
 	powerupspanel = new PowerupsPanel(more);
 	npcspanel = new NPCsPanel(more);
-	tilepanel = new TilePanel(more);
 	more->AddPage(tilepanel, _("Tiles"));
 	more->AddPage(propspanel, _("Props"));
 	more->AddPage(powerupspanel, _("Powerups"));
@@ -766,6 +766,7 @@ void MainFrame::LevelLoadBitmaps() {
 void MainFrame::TileCopy() {
 	memcpy(&instance->tile_copy, &instance->level->tile[instance->tile_selected], sizeof(LEVEL_TILE));
 	instance->tile_copied = true;
+	instance->tilepanel->enablePasteButton();
 }
 
 void MainFrame::TilePaste() {
@@ -805,4 +806,3 @@ void MainFrame::OnToggleNPCs(wxCommandEvent &event) {
 	MainFrame::instance->show_npcs = event.IsChecked();
 	MainFrame::instance->display->Refresh();
 }
-

@@ -14,17 +14,10 @@ public:
 	void GetNPC(LEVEL_NPC &npc);
 	void SetNPC(LEVEL_NPC &npc);
 protected:
-	wxStaticText * lblType;
-	wxStaticText * lblPosition;
-	wxStaticText * lblDirection;
-
 	wxChoice * cmbType;
 
 	wxTextCtrl * txtX;
 	wxTextCtrl * txtY;
 
 	wxChoice * cmbDirection;
-
-	wxButton * btnOK;
-	wxButton * btnCancel;
 };

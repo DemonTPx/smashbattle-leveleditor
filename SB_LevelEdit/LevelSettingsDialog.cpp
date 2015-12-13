@@ -23,24 +23,24 @@ LevelSettingsDialog::~LevelSettingsDialog() {
 void LevelSettingsDialog::InitializeComponents() {
 	wxFlexGridSizer *gridSizer = new wxFlexGridSizer(2);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Name:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Name:")), 0, wxALIGN_CENTER_VERTICAL);
 	txtName = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtName->SetMaxLength(20);
 	gridSizer->Add(txtName, 1, wxEXPAND);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Author:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Author:")), 0, wxALIGN_CENTER_VERTICAL);
 	txtAuthor = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtAuthor->SetMaxLength(20);
 	gridSizer->Add(txtAuthor, 1, wxEXPAND);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Type:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Type:")), 0, wxALIGN_CENTER_VERTICAL);
 	cmbType = new wxChoice(this, wxID_ANY);
 	cmbType->Append(_("Single player"));
 	cmbType->Append(_("Multiplayer"));
 	cmbType->Select(1);
 	gridSizer->Add(cmbType, 1, wxEXPAND);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Max Players:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Max Players:")), 0, wxALIGN_CENTER_VERTICAL);
 	cmbMaxPlayers = new wxChoice(this, wxID_ANY);
 	cmbMaxPlayers->Append(_("2"));
 	cmbMaxPlayers->Append(_("3"));
@@ -48,23 +48,23 @@ void LevelSettingsDialog::InitializeComponents() {
 	cmbMaxPlayers->Select(2);
 	gridSizer->Add(cmbMaxPlayers, 1, wxEXPAND);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Background color:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Background color:")), 0, wxALIGN_CENTER_VERTICAL);
 	clrBackground = new wxColourPickerCtrl(this, wxID_ANY, *wxBLACK);
 	gridSizer->Add(clrBackground);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Background file:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Background file:")), 0, wxALIGN_CENTER_VERTICAL);
 	cmbFileBackground = new wxChoice(this, wxID_ANY);
 	gridSizer->Add(cmbFileBackground, 1, wxEXPAND);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Tiles file:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Tiles file:")), 0, wxALIGN_CENTER_VERTICAL);
 	cmbFileTiles = new wxChoice(this, wxID_ANY);
 	gridSizer->Add(cmbFileTiles, 1, wxEXPAND);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Props file:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Props file:")), 0, wxALIGN_CENTER_VERTICAL);
 	cmbFileProps = new wxChoice(this, wxID_ANY);
 	gridSizer->Add(cmbFileProps, 1, wxEXPAND);
 
-	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Music file:")));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Music file:")), 0, wxALIGN_CENTER_VERTICAL);
 	cmbFileMusic = new wxChoice(this, wxID_ANY);
 	gridSizer->Add(cmbFileMusic, 1, wxEXPAND);
 

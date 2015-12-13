@@ -51,7 +51,7 @@ const Npc MainFrame::NPC[MainFrame::NPCCount] = {
 };
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size) :
-		wxFrame((wxFrame *) NULL, -1, title, pos, size)
+		wxFrame((wxFrame *) NULL, -1, title, pos, size, wxDEFAULT_FRAME_STYLE ^ wxRESIZE_BORDER)
 {
 	instance = this;
 	InitializeComponents();

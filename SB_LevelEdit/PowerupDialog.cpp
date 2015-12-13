@@ -9,7 +9,8 @@
 
 PowerupDialog * PowerupDialog::instance = NULL;
 
-PowerupDialog::PowerupDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("Powerup"), pos, wxSize(200, 185)){
+PowerupDialog::PowerupDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) :
+		wxDialog(parent, id, _("Powerup"), pos){
 	instance = this;
 
 	InitializeComponents();
@@ -20,28 +21,35 @@ PowerupDialog::~PowerupDialog() {
 }
 
 void PowerupDialog::InitializeComponents() {
-	SetClientSize(150, 95);
+	wxGridSizer * gridSizer = new wxGridSizer(2);
 
-	// Static text
-	lblType = new wxStaticText(this, wxID_ANY, _("Type:"), wxPoint(5, 5), wxSize(50, 20));
-	lblPosition = new wxStaticText(this, wxID_ANY, _("Position:"), wxPoint(5, 30), wxSize(50, 20));
-
-	// Input fields
-	cmbType = new wxChoice(this, wxID_ANY, wxPoint(60, 5), wxSize(85, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Type:")), 0, wxALIGN_CENTER_VERTICAL);
+	cmbType = new wxChoice(this, wxID_ANY);
 	for(int i = 0; i < MainFrame::PowerupCount; i++) {
 		cmbType->Append(MainFrame::POWERUP[i].name);
 	}
 	cmbType->Select(0);
+	gridSizer->Add(cmbType, 1, wxEXPAND);
 
-	txtX = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(60, 30), wxSize(30, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Position:")), 0, wxALIGN_CENTER_VERTICAL);
+
+	wxBoxSizer * positionSizer = new wxBoxSizer(wxHORIZONTAL);
+	txtX = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtX->SetMaxLength(3);
-	txtY = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(95, 30), wxSize(30, 20));
+	positionSizer->Add(txtX, 1, wxEXPAND);
+	txtY = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtY->SetMaxLength(3);
+	positionSizer->Add(txtY, 1, wxEXPAND);
 
-	// Buttons
-	btnOK = new wxButton(this, wxID_OK, _("&Save"), wxPoint(40, 60), wxSize(50, 30));
-	btnOK->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(95, 60), wxSize(50, 30));
+	gridSizer->Add(positionSizer, 1, wxEXPAND);
+
+	wxBoxSizer * sizer = new wxBoxSizer(wxVERTICAL);
+
+	sizer->Add(gridSizer, 1, wxEXPAND | wxALL, 5);
+	sizer->Add(CreateStdDialogButtonSizer(wxOK | wxCANCEL), 0, wxALIGN_RIGHT | wxALL, 5);
+	sizer->SetMinSize(200, 0);
+
+	SetSizerAndFit(sizer);
 }
 
 void PowerupDialog::GetPowerup(LEVEL_POWERUP &powerup) {

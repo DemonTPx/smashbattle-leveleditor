@@ -10,7 +10,8 @@
 
 LevelMissionDialog * LevelMissionDialog::instance = NULL;
 
-LevelMissionDialog::LevelMissionDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) : wxDialog(parent, id, _("Edit mission"), pos, wxSize(400, 325)){
+LevelMissionDialog::LevelMissionDialog(wxWindow* parent, wxWindowID id, const wxPoint& pos) :
+		wxDialog(parent, id, _("Edit mission"), pos){
 	instance = this;
 
 	InitializeComponents();
@@ -21,47 +22,73 @@ LevelMissionDialog::~LevelMissionDialog() {
 }
 
 void LevelMissionDialog::InitializeComponents() {
-	SetClientSize(400, 265);
+	wxFlexGridSizer * gridSizer = new wxFlexGridSizer(2);
 
 	// Static text
-	lblCharacter = new wxStaticText(this, wxID_ANY, _("Character:"), wxPoint(10, 5), wxSize(100, 20));
-	lblType = new wxStaticText(this, wxID_ANY, _("Type:"), wxPoint(10, 30), wxSize(100, 20));
-
-	lblBullets = new wxStaticText(this, wxID_ANY, _("Bullets:"), wxPoint(10, 65), wxSize(100, 20));
-	lblDoubleDamageBullets = new wxStaticText(this, wxID_ANY, _("DoubleDamage:"), wxPoint(10, 90), wxSize(100, 20));
-	lblInstantKillBullets = new wxStaticText(this, wxID_ANY, _("Instant Kill:"), wxPoint(10, 115), wxSize(100, 20));
-	lblBombs = new wxStaticText(this, wxID_ANY, _("Bombs:"), wxPoint(10, 140), wxSize(100, 20));
-
-	lblKillAllTimeGold = new wxStaticText(this, wxID_ANY, _("Gold time:"), wxPoint(10, 170), wxSize(100, 20));
-	lblKillAllTimeSilver = new wxStaticText(this, wxID_ANY, _("Silver time:"), wxPoint(10, 195), wxSize(100, 20));
-
-	// Input fields
-	cmbCharacter = new wxChoice(this, wxID_ANY, wxPoint(120, 5), wxSize(270, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Character:")), 0, wxALIGN_CENTER_VERTICAL);
+	cmbCharacter = new wxChoice(this, wxID_ANY);
 	for(int i = 0; i < MainFrame::CharacterCount; i++) {
 		cmbCharacter->Append(MainFrame::CHARACTER[i].name);
 	}
-	cmbType = new wxChoice(this, wxID_ANY, wxPoint(120, 30), wxSize(270, 20));
+	gridSizer->Add(cmbCharacter, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Type:")), 0, wxALIGN_CENTER_VERTICAL);
+	cmbType = new wxChoice(this, wxID_ANY);
 	cmbType->Append(_("No mission"));
 	cmbType->Append(_("Kill all NPCs"));
 	cmbType->Select(0);
+	gridSizer->Add(cmbType, 1, wxEXPAND);
 
-	txtBullets = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 65), wxSize(100, 20));
-	txtDoubleDamageBullets = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 90), wxSize(100, 20));
-	txtInstantKillBullets = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 115), wxSize(100, 20));
-	txtBombs = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 140), wxSize(100, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Bullets:")), 0, wxALIGN_CENTER_VERTICAL);
+	txtBullets = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+	gridSizer->Add(txtBullets, 1, wxEXPAND);
 
-	txtKillAllTimeGold = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 170), wxSize(100, 20));
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("DoubleDamage:")), 0, wxALIGN_CENTER_VERTICAL);
+	txtDoubleDamageBullets = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+	gridSizer->Add(txtDoubleDamageBullets, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Instant Kill:")), 0, wxALIGN_CENTER_VERTICAL);
+	txtInstantKillBullets = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+	gridSizer->Add(txtInstantKillBullets, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Bombs:")), 0, wxALIGN_CENTER_VERTICAL);
+	txtBombs = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
+	gridSizer->Add(txtBombs, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Gold time:")), 0, wxALIGN_CENTER_VERTICAL);
+
+	txtKillAllTimeGold = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtKillAllTimeGold->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(LevelMissionDialog::OnKillAllTimeGoldUpdated));
-	txtKillAllTimeSilver = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(120, 195), wxSize(100, 20));
+
+	lblKillAllTimeGoldTime = new wxStaticText(this, wxID_ANY, wxEmptyString);
+
+	wxBoxSizer * goldTimeSizer = new wxBoxSizer(wxHORIZONTAL);
+	goldTimeSizer->Add(txtKillAllTimeGold, 1, wxEXPAND);
+	goldTimeSizer->Add(lblKillAllTimeGoldTime, 1, wxLEFT | wxRIGHT, 5);
+
+	gridSizer->Add(goldTimeSizer, 1, wxEXPAND);
+
+	gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Silver time:")), 0, wxALIGN_CENTER_VERTICAL);
+	txtKillAllTimeSilver = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
 	txtKillAllTimeSilver->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(LevelMissionDialog::OnKillAllTimeSilverUpdated));
 
-	lblKillAllTimeGoldTime = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(225, 170), wxSize(100, 20));
-	lblKillAllTimeSilverTime = new wxStaticText(this, wxID_ANY, wxEmptyString, wxPoint(225, 195), wxSize(100, 20));
+	lblKillAllTimeSilverTime = new wxStaticText(this, wxID_ANY, wxEmptyString);
 
-	// Buttons
-	btnSave = new wxButton(this, wxID_OK, _("&OK"), wxPoint(220, 230), wxSize(80, 30));
-	btnSave->SetDefault();
-	btnCancel = new wxButton(this, wxID_CANCEL, _("&Cancel"), wxPoint(310, 230), wxSize(80, 30));
+	wxBoxSizer * silverTimeSizer = new wxBoxSizer(wxHORIZONTAL);
+	silverTimeSizer->Add(txtKillAllTimeSilver, 1, wxEXPAND);
+	silverTimeSizer->Add(lblKillAllTimeSilverTime, 1, wxLEFT | wxRIGHT, 5);
+
+	gridSizer->Add(silverTimeSizer, 1, wxEXPAND);
+
+	gridSizer->AddGrowableCol(1, 1);
+
+	wxBoxSizer * sizer = new wxBoxSizer(wxVERTICAL);
+
+	sizer->Add(gridSizer, 1, wxEXPAND | wxALL, 5);
+	sizer->Add(CreateStdDialogButtonSizer(wxOK | wxCANCEL), 0, wxALL | wxALIGN_RIGHT, 5);
+	sizer->SetMinSize(400, 0);
+
+	SetSizerAndFit(sizer);
 }
 
 int LevelMissionDialog::EditLevel(LEVEL_MISSION &mission) {

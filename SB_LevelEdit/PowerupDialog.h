@@ -14,14 +14,8 @@ public:
 	void GetPowerup(LEVEL_POWERUP &powerup);
 	void SetPowerup(LEVEL_POWERUP &powerup);
 protected:
-	wxStaticText * lblType;
-	wxStaticText * lblPosition;
-
 	wxChoice * cmbType;
 
 	wxTextCtrl * txtX;
 	wxTextCtrl * txtY;
-
-	wxButton * btnOK;
-	wxButton * btnCancel;
 };

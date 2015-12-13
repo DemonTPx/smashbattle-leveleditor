@@ -20,15 +20,6 @@ public:
 
 	wxString filename;
 protected:
-	wxStaticText * lblCharacter;
-	wxStaticText * lblType;
-	wxStaticText * lblBullets;
-	wxStaticText * lblDoubleDamageBullets;
-	wxStaticText * lblInstantKillBullets;
-	wxStaticText * lblBombs;
-	wxStaticText * lblKillAllTimeGold;
-	wxStaticText * lblKillAllTimeSilver;
-
 	wxChoice * cmbCharacter;
 	wxChoice * cmbType;
 	wxTextCtrl * txtBullets;
@@ -40,7 +31,4 @@ protected:
 
 	wxStaticText * lblKillAllTimeGoldTime;
 	wxStaticText * lblKillAllTimeSilverTime;
-
-	wxButton * btnSave;
-	wxButton * btnCancel;
 };

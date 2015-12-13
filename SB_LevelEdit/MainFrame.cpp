@@ -136,10 +136,12 @@ void MainFrame::InitializeComponents()
 	propspanel = new PropsPanel(more);
 	powerupspanel = new PowerupsPanel(more);
 	npcspanel = new NPCsPanel(more);
+	characterspanel = new CharactersPanel(more);
 	more->AddPage(tilepanel, _("Tiles"));
 	more->AddPage(propspanel, _("Props"));
 	more->AddPage(powerupspanel, _("Powerups"));
 	more->AddPage(npcspanel, _("NPCs"));
+	more->AddPage(characterspanel, _("Characters"));
 
 	pstarts = NULL;
 	powerups = NULL;

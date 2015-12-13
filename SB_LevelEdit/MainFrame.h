@@ -5,6 +5,7 @@
 #include "PropsPanel.h"
 #include "PowerupsPanel.h"
 #include "NPCsPanel.h"
+#include "CharactersPanel.h"
 #include "wx/tglbtn.h"
 #include "wx/notebook.h"
 
@@ -111,11 +112,13 @@ protected:
 
 	wxPanel * toolbar;
 	wxPanel * display;
-	TilePanel * tilepanel;
+
 	wxNotebook * more;
+	TilePanel * tilepanel;
 	PropsPanel * propspanel;
 	PowerupsPanel * powerupspanel;
 	NPCsPanel * npcspanel;
+	CharactersPanel * characterspanel;
 
 	Level * level;
 	wxString level_filename;

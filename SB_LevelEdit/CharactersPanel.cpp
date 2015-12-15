@@ -67,7 +67,7 @@ void CharactersPanel::OnDisplayPaint(wxPaintEvent &event) {
         return;
     }
 
-    frame = (frame + 1) % 3600;
+    panel->frame = (panel->frame + 1) % 3600;
 
     static int clips1[] = {
             SPR_R, SPR_R_WALK1, SPR_R_WALK2, SPR_R_WALK3, SPR_R_RUN1, SPR_R_RUN2, SPR_R_RUN3,
@@ -94,33 +94,33 @@ void CharactersPanel::OnDisplayPaint(wxPaintEvent &event) {
         x += 30;
     }
 
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_AVATAR + ((frame / 15) % 2)]), 380, 10, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_AVATAR + ((panel->frame / 15) % 2)]), 380, 10, true);
 
     static int clips3[] = {SPR_R, SPR_R_DUCK, SPR_R, SPR_R_JUMP, SPR_R, SPR_R_BRAKE};
     static int clips4[] = {SPR_L, SPR_L_DUCK, SPR_L, SPR_L_JUMP, SPR_L, SPR_L_BRAKE};
 
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[clips3[(frame / 6) % 6]]), 370, 70, true);
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[clips4[(frame / 6) % 6]]), 400, 70, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[clips3[(panel->frame / 6) % 6]]), 370, 70, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[clips4[(panel->frame / 6) % 6]]), 400, 70, true);
 
-    x = 10 + ((frame * 6) % 340);
+    x = 10 + ((panel->frame * 6) % 340);
     y = 130;
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_WALK1 + ((frame / 3) % 3)]), x, y, true);
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_WALK1 + ((frame / 3) % 3)]), 380, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_WALK1 + ((panel->frame / 3) % 3)]), x, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_WALK1 + ((panel->frame / 3) % 3)]), 380, y, true);
 
-    x = 350 - ((frame * 6) % 340);
+    x = 350 - ((panel->frame * 6) % 340);
     y = 190;
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_WALK1 + ((frame / 3) % 3)]), x, y, true);
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_WALK1 + ((frame / 3) % 3)]), 380, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_WALK1 + ((panel->frame / 3) % 3)]), x, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_WALK1 + ((panel->frame / 3) % 3)]), 380, y, true);
 
-    x = 10 + ((frame * 10) % 340);
+    x = 10 + ((panel->frame * 10) % 340);
     y = 250;
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_RUN1 + ((frame / 3) % 3)]), x, y, true);
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_RUN1 + ((frame / 3) % 3)]), 380, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_RUN1 + ((panel->frame / 3) % 3)]), x, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_R_RUN1 + ((panel->frame / 3) % 3)]), 380, y, true);
 
-    x = 350 - ((frame * 10) % 340);
+    x = 350 - ((panel->frame * 10) % 340);
     y = 310;
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_RUN1 + ((frame / 3) % 3)]), x, y, true);
-    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_RUN1 + ((frame / 3) % 3)]), 380, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_RUN1 + ((panel->frame / 3) % 3)]), x, y, true);
+    dc.DrawBitmap(panel->character->GetSubBitmap(panel->clip[SPR_L_RUN1 + ((panel->frame / 3) % 3)]), 380, y, true);
 }
 
 void CharactersPanel::OnTimer(wxTimerEvent &event) {

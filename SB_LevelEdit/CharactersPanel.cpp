@@ -16,6 +16,7 @@ CharactersPanel::CharactersPanel(wxWindow* parent, wxWindowID id, const wxPoint&
     Create(parent, id, pos, size, style, name);
 
     frame = 0;
+    character = 0;
     bg_color = wxColour(0x44, 0x44, 0x44);
     character_loaded = false;
 

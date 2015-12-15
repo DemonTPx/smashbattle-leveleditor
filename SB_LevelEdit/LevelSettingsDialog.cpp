@@ -139,7 +139,7 @@ int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_META &meta) {
 
 	this->SetTitle(_("Edit level"));
 
-	this->filename = wxString(filename, wxConvUTF8);
+	this->filename = wxString(filename);
 
 	sep = wxFileName::GetPathSeparator();
 

@@ -117,6 +117,4 @@ void TileSelector::OnClick(wxMouseEvent &event) {
 
 void TileSelector::OnSize(wxSizeEvent &event) {
 	tiles_per_line = (event.GetSize().x - (BORDER * 2)) / (TILE_W + (TILE_SPACING * 2));
-
-	wxScrolledWindow::OnSize(event);
 }

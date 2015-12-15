@@ -72,7 +72,6 @@ protected:
 	void OnMission(wxCommandEvent &event);
 
     void OnDisplayPaint(wxPaintEvent &event);
-	void OnDisplayErase(wxEraseEvent &event);
 	void OnDisplayMouseDown(wxMouseEvent &event);
 	void OnDisplayKeyDown(wxKeyEvent &event);
 	

@@ -97,10 +97,6 @@ MainFrame::~MainFrame() {
 
 void MainFrame::InitializeComponents()
 {
-	SetWindowStyle(wxCAPTION | wxCLOSE_BOX | wxSYSTEM_MENU);
-	SetBackgroundColour(wxColour(0xeeeeee));
-	SetBackgroundStyle(wxBG_STYLE_CUSTOM);
-
 	toolbar = new wxPanel(this, wxID_ANY, wxPoint(0, 0), wxSize(1140, 40));
 
 	int btnW = 100;
@@ -126,7 +122,6 @@ void MainFrame::InitializeComponents()
 
 	display = new wxPanel(this, wxID_ANY, wxPoint(0, 40), wxSize(640, 480));
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
-	display->Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler(MainFrame::OnDisplayErase));
 	display->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MainFrame::OnDisplayMouseDown));
 	display->Connect(wxEVT_KEY_DOWN, wxCharEventHandler(MainFrame::OnDisplayKeyDown));
 	display->SetFocus();
@@ -263,10 +258,6 @@ void MainFrame::OnDisplayKeyDown(wxKeyEvent &event) {
 			f->Refresh();
 		}
 	}
-}
-
-
-void MainFrame::OnDisplayErase(wxEraseEvent &event) {
 }
 
 void MainFrame::OnDisplayPaint(wxPaintEvent &event) {

@@ -62,6 +62,7 @@ public:
 	void TileCopy();
 	void TilePaste();
 protected:
+	void OnShow(wxShowEvent &event);
 	void OnExit(wxCloseEvent &event);
 
 	void OnNew(wxCommandEvent &event);
@@ -94,6 +95,8 @@ protected:
 	bool LevelPromptClose();
 
 	DECLARE_EVENT_TABLE()
+
+	wxSizer * sizer;
 
 	wxButton * btnNew;
 	wxButton * btnOpen;

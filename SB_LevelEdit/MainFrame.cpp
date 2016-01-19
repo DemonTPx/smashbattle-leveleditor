@@ -120,13 +120,13 @@ void MainFrame::InitializeComponents()
 	btnPowerups = new wxToggleButton(toolbar, ID_TogglePowerups, _("Power&ups"), wxPoint(spaceW * 2 + btnW * 9, 0), wxSize(btnW, btnH));
 	btnNPCs = new wxToggleButton(toolbar, ID_ToggleNPCs, _("NP&Cs"), wxPoint(spaceW * 2 + btnW * 10, 0), wxSize(btnW, btnH));
 
-	display = new wxPanel(this, wxID_ANY, wxPoint(0, 40), wxSize(640, 480));
+	display = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(640, 480));
 	display->Connect(wxEVT_PAINT, wxPaintEventHandler(MainFrame::OnDisplayPaint));
 	display->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MainFrame::OnDisplayMouseDown));
 	display->Connect(wxEVT_KEY_DOWN, wxCharEventHandler(MainFrame::OnDisplayKeyDown));
 	display->SetFocus();
 
-	more = new wxNotebook(this, wxID_ANY, wxPoint(640, 40), wxSize(500, 480));
+	more = new wxNotebook(this, wxID_ANY);
 	tilepanel = new TilePanel(more);
 	propspanel = new PropsPanel(more);
 	powerupspanel = new PowerupsPanel(more);
@@ -137,6 +137,18 @@ void MainFrame::InitializeComponents()
 	more->AddPage(powerupspanel, _("Powerups"));
 	more->AddPage(npcspanel, _("NPCs"));
 	more->AddPage(characterspanel, _("Characters"));
+
+	wxBoxSizer * main = new wxBoxSizer(wxHORIZONTAL);
+
+	main->Add(display, 0, wxEXPAND);
+	main->Add(more, 1, wxEXPAND);
+
+	sizer = new wxBoxSizer(wxVERTICAL);
+
+	sizer->Add(toolbar);
+	sizer->Add(main, 1, wxEXPAND);
+
+	SetSizer(sizer);
 
 	pstarts = NULL;
 	powerups = NULL;
@@ -181,9 +193,16 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_TOGGLEBUTTON(ID_TogglePStarts, MainFrame::OnTogglePStarts)
 	EVT_TOGGLEBUTTON(ID_TogglePowerups, MainFrame::OnTogglePowerups)
 	EVT_TOGGLEBUTTON(ID_ToggleNPCs, MainFrame::OnToggleNPCs)
+	EVT_SHOW(MainFrame::OnShow)
+	EVT_SIZE(MainFrame::OnSize)
 	EVT_CLOSE(MainFrame::OnExit)
 	EVT_CHAR_HOOK(MainFrame::OnDisplayKeyDown)
 END_EVENT_TABLE()
+
+
+void MainFrame::OnShow(wxShowEvent &event) {
+	MainFrame::instance->SetSizerAndFit(MainFrame::instance->GetSizer());
+}
 
 void MainFrame::OnExit(wxCloseEvent &event)
 {
@@ -787,7 +806,7 @@ void MainFrame::OnToggleProps(wxCommandEvent &event) {
 
 void MainFrame::OnTogglePStarts(wxCommandEvent &event) {
 	MainFrame::instance->show_pstarts = event.IsChecked();
-	MainFrame::instance->display->Refresh();
+//	MainFrame::instance->display->Refresh();
 }
 
 void MainFrame::OnTogglePowerups(wxCommandEvent &event) {

@@ -11,3 +11,4 @@ Debug/
 *.cmake
 *.vcxproj.filters
 *.vcxproj.user
+.idea

@@ -13,6 +13,7 @@ public:
 	static LevelSettingsDialog * instance;
 	
 	void InitializeComponents();
+	wxArrayString FillFileList(wxString path, wxString filespec);
 
 	int NewLevel();
 	int EditLevel(wxString filename, LEVEL_META &meta);

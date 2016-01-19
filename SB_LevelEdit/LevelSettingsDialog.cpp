@@ -85,11 +85,11 @@ int LevelSettingsDialog::NewLevel() {
 	wxString wildcard = _("Level files (*.lvl)|*.lvl|All files (*.*)|*.*");
 	wxFileDialog dialog(this, _("New level"), wxEmptyString, wxEmptyString, wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	int ret;
-	wxFileSystem fs;
-	wxString file;
 	wxString gfx_path;
 	wxString music_path;
 	char sep;
+	wxArrayString bitmap_list;
+	wxArrayString music_list;
 
 	ret = dialog.ShowModal();
 	if(ret == wxID_OK) {
@@ -101,25 +101,20 @@ int LevelSettingsDialog::NewLevel() {
 		gfx_path = dialog.GetPath().BeforeLast(sep).BeforeLast(sep);
 		gfx_path.Append(sep).Append(_("gfx")).Append(sep);
 
-		fs.ChangePathTo(gfx_path);
-		file = fs.FindFirst(_("*.bmp"), wxFILE);
-		while(file != wxEmptyString) {
-			cmbFileTiles->Append(file.AfterLast(sep));
-			cmbFileBackground->Append(file.AfterLast(sep));
-			cmbFileProps->Append(file.AfterLast(sep));
-			
-			file = fs.FindNext();
+		bitmap_list = FillFileList(gfx_path, _("*.bmp"));
+
+		for (wxArrayString::size_type i = 0; i < bitmap_list.GetCount(); i++) {
+			cmbFileTiles->Append(bitmap_list[i]);
+			cmbFileBackground->Append(bitmap_list[i]);
+			cmbFileProps->Append(bitmap_list[i]);
 		}
 
 		music_path = dialog.GetPath().BeforeLast(sep).BeforeLast(sep);
 		music_path.Append(sep).Append(_("music")).Append(sep);
 
-		fs.ChangePathTo(music_path);
-		file = fs.FindFirst(_("*.ogg"), wxFILE);
-		while(file != wxEmptyString) {
-			cmbFileMusic->Append(file.AfterLast(sep));
-			
-			file = fs.FindNext();
+		music_list = FillFileList(music_path, _("*.ogg"));
+		for (wxArrayString::size_type i = 0; i < music_list.GetCount(); i++) {
+			cmbFileMusic->Append(music_list[i]);
 		}
 
 		ret = this->ShowModal();
@@ -129,13 +124,13 @@ int LevelSettingsDialog::NewLevel() {
 }
 
 int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_META &meta) {
-	wxFileSystem fs;
-	wxString file;
 	wxString basename;
 	wxString gfx_path;
 	wxString music_path;
 	char sep;
 	wxColour color;
+	wxArrayString bitmap_list;
+	wxArrayString music_list;
 
 	this->SetTitle(_("Edit level"));
 
@@ -150,10 +145,10 @@ int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_META &meta) {
 	cmbFileBackground->Append(wxEmptyString);
 	cmbFileProps->Append(wxEmptyString);
 
-	fs.ChangePathTo(gfx_path);
-	file = fs.FindFirst(_("*.bmp"), wxFILE);
-	while(file != wxEmptyString) {
-		basename = file.AfterLast(sep);
+	bitmap_list = FillFileList(gfx_path, _("*.bmp"));
+
+	for (wxArrayString::size_type i = 0; i < bitmap_list.GetCount(); i++) {
+		basename = bitmap_list[i];
 
 		cmbFileTiles->Append(basename);
 		if(basename == wxString(meta.filename_tiles, wxConvUTF8))
@@ -166,8 +161,6 @@ int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_META &meta) {
 		cmbFileProps->Append(basename);
 		if(basename == wxString(meta.filename_props, wxConvUTF8))
 			cmbFileProps->Select(cmbFileProps->GetCount() - 1);
-		
-		file = fs.FindNext();
 	}
 
 	music_path = this->filename.BeforeLast(sep).BeforeLast(sep);
@@ -175,16 +168,13 @@ int LevelSettingsDialog::EditLevel(wxString filename, LEVEL_META &meta) {
 
 	cmbFileMusic->Append(wxEmptyString);
 
-	fs.ChangePathTo(music_path);
-	file = fs.FindFirst(_("*.ogg"), wxFILE);
-	while(file != wxEmptyString) {
-		basename = file.AfterLast(sep);
+	music_list = FillFileList(music_path, _("*.ogg"));
+	for (wxArrayString::size_type i = 0; i < music_list.GetCount(); i++) {
+		basename = music_list[i];
 
 		cmbFileMusic->Append(basename);
 		if(basename == wxString(meta.filename_music, wxConvUTF8))
 			cmbFileMusic->Select(cmbFileMusic->GetCount() - 1);
-		
-		file = fs.FindNext();
 	}
 
 	txtName->SetValue(wxString(meta.name, wxConvUTF8));
@@ -214,9 +204,30 @@ void LevelSettingsDialog::GetMeta(LEVEL_META &meta) {
 	color = wxc.Red() << 16 | wxc.Green() << 8 | wxc.Blue();
 
 	meta.background_color = color;
-	
+
 	strncpy(meta.filename_background, cmbFileBackground->GetStringSelection().ToAscii(), 30);
 	strncpy(meta.filename_tiles, cmbFileTiles->GetStringSelection().ToAscii(), 30);
 	strncpy(meta.filename_props, cmbFileProps->GetStringSelection().ToAscii(), 30);
 	strncpy(meta.filename_music, cmbFileMusic->GetStringSelection().ToAscii(), 30);
+}
+
+wxArrayString LevelSettingsDialog::FillFileList(wxString path, wxString filespec) {
+	wxArrayString list;
+	wxString file;
+	wxFileSystem fs;
+	char sep;
+
+	sep = wxFileName::GetPathSeparator();
+	fs.ChangePathTo(path);
+
+	for (file = fs.FindFirst(filespec, wxFILE); file != wxEmptyString; file = fs.FindNext()) {
+		if (file == wxEmptyString) {
+			continue;
+		}
+
+		list.Add(file.AfterLast(sep));
+	}
+	list.Sort();
+
+	return list;
 }

@@ -40,6 +40,9 @@ public:
 
     static CharactersPanel * instance;
 
+    static const int SUIT_ORIGINAL[5];
+    static const int SUIT_REPLACE[4][5];
+
     void InitializeComponents();
 protected:
     DECLARE_EVENT_TABLE()
@@ -47,6 +50,12 @@ protected:
     wxPanel * display;
     wxButton * btnOpen;
     wxColourPickerCtrl * clrBackground;
+
+    wxButton * btnPlayerDefault;
+    wxButton * btnPlayer1;
+    wxButton * btnPlayer2;
+    wxButton * btnPlayer3;
+    wxButton * btnPlayer4;
 
     wxTimer * timer;
 
@@ -56,8 +65,14 @@ protected:
     void OnColorChanged(wxColourPickerEvent &event);
     void OnOpen(wxCommandEvent &event);
 
+    void OnPlayerDefault(wxCommandEvent &event);
+    void OnPlayer1(wxCommandEvent &event);
+    void OnPlayer2(wxCommandEvent &event);
+    void OnPlayer3(wxCommandEvent &event);
+    void OnPlayer4(wxCommandEvent &event);
+
     void CharacterOpen();
-    void CleanupBitmaps();
+    void CreatePlayerCharacters();
 
     void SetCharacterClips();
 
@@ -65,7 +80,10 @@ protected:
 
     bool character_loaded;
 
-    wxBitmap * character;
+    wxBitmap character;
+    wxBitmap character_player[4];
+
+    wxBitmap * character_display;
 
     wxRect clip[SPR_COUNT];
 
@@ -75,5 +93,10 @@ protected:
 enum {
     ID_CharactersPanel_Open,
     ID_CharactersPanel_Color,
-    ID_CharactersPanel_Timer
+    ID_CharactersPanel_Timer,
+    ID_CharactersPanel_PlayerDefault,
+    ID_CharactersPanel_Player1,
+    ID_CharactersPanel_Player2,
+    ID_CharactersPanel_Player3,
+    ID_CharactersPanel_Player4
 };

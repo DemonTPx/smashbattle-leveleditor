@@ -23,28 +23,44 @@ void PropsPanel::InitializeComponents() {
 	lstProps->Connect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(PropsPanel::OnLstPropSelected));
 
 	btnAdd = new wxButton(this, ID_btnAdd, _("Add"));
-	btnDuplicate = new wxButton(this, ID_btnDuplicate, _("Duplicate"));
 	btnChg = new wxButton(this, ID_btnChg, _("Edit"));
+	btnDuplicate = new wxButton(this, ID_btnDuplicate, _("Duplicate"));
 	btnRem = new wxButton(this, ID_btnRem, _("Delete"));
 
-	wxBoxSizer * toolbar = new wxBoxSizer(wxHORIZONTAL);
-	toolbar->Add(btnAdd, 1, wxEXPAND);
-	toolbar->Add(btnDuplicate, 1, wxEXPAND);
-	toolbar->Add(btnChg, 1, wxEXPAND);
-	toolbar->Add(btnRem, 1, wxEXPAND);
+	btnMoveTop = new wxButton(this, ID_btnMoveTop, _("Move to top"));
+	btnMoveUp = new wxButton(this, ID_btnMoveUp, _("Move up"));
+	btnMoveDown = new wxButton(this, ID_btnMoveDown, _("Move down"));
+	btnMoveBottom = new wxButton(this, ID_btnMoveBottom, _("Move to bottom"));
+
+	wxBoxSizer * toolbar1 = new wxBoxSizer(wxHORIZONTAL);
+	toolbar1->Add(btnAdd, 1, wxEXPAND);
+	toolbar1->Add(btnChg, 1, wxEXPAND);
+	toolbar1->Add(btnDuplicate, 1, wxEXPAND);
+	toolbar1->Add(btnRem, 1, wxEXPAND);
+
+	wxBoxSizer * toolbar2 = new wxBoxSizer(wxHORIZONTAL);
+	toolbar2->Add(btnMoveTop, 1, wxEXPAND);
+	toolbar2->Add(btnMoveUp, 1, wxEXPAND);
+	toolbar2->Add(btnMoveDown, 1, wxEXPAND);
+	toolbar2->Add(btnMoveBottom, 1, wxEXPAND);
 
 	wxBoxSizer * panel = new wxBoxSizer(wxVERTICAL);
 	panel->Add(lstProps, 1, wxALL | wxEXPAND, 5);
-	panel->Add(toolbar, 0, wxALL | wxEXPAND, 5);
+	panel->Add(toolbar1, 0, wxALL | wxEXPAND, 5);
+	panel->Add(toolbar2, 0, wxALL | wxEXPAND, 5);
 
 	SetSizerAndFit(panel);
 }
 
 BEGIN_EVENT_TABLE(PropsPanel, wxPanel)
 	EVT_BUTTON(ID_btnAdd, PropsPanel::OnBtnAdd)
-	EVT_BUTTON(ID_btnDuplicate, PropsPanel::OnBtnDuplicate)
 	EVT_BUTTON(ID_btnChg, PropsPanel::OnBtnChg)
+	EVT_BUTTON(ID_btnDuplicate, PropsPanel::OnBtnDuplicate)
 	EVT_BUTTON(ID_btnRem, PropsPanel::OnBtnRem)
+	EVT_BUTTON(ID_btnMoveTop, PropsPanel::OnBtnMoveTop)
+	EVT_BUTTON(ID_btnMoveUp, PropsPanel::OnBtnMoveUp)
+	EVT_BUTTON(ID_btnMoveDown, PropsPanel::OnBtnMoveDown)
+	EVT_BUTTON(ID_btnMoveBottom, PropsPanel::OnBtnMoveBottom)
 END_EVENT_TABLE()
 
 void PropsPanel::setLevel(Level * l) {
@@ -112,39 +128,6 @@ void PropsPanel::OnBtnAdd(wxCommandEvent &event) {
 	}
 }
 
-void PropsPanel::OnBtnDuplicate(wxCommandEvent &event) {
-	int ret;
-	int idx;
-	LEVEL_PROP * p;
-	LEVEL_PROP * pcopy;
-
-	idx = lstProps->GetSelection();
-
-	if(idx == -1 || idx >= (int)level->props->size())
-		return;
-
-	PropDialog dialog(this, wxID_ANY, wxDefaultPosition);
-	p = level->props->at(idx);
-	dialog.SetProp(*p);
-	ret = dialog.ShowModal();
-	if(ret == wxID_OK) {
-		pcopy = new LEVEL_PROP;
-		dialog.GetProp(*pcopy);
-
-		level->props->push_back(pcopy);
-
-		lstProps->Append(wxString::Format(_("size:%dx%d src:%dx%d dst:%dx%d"),
-										  p->src.w, p->src.h,
-										  p->src.x, p->src.y,
-										  p->dst.x, p->dst.y));
-		lstProps->Select(lstProps->GetCount() - 1);
-
-		MainFrame::instance->prop_selected = lstProps->GetSelection();
-		MainFrame::instance->level_modified = true;
-		MainFrame::instance->Refresh();
-	}
-}
-
 void PropsPanel::OnBtnChg(wxCommandEvent &event) {
 	int ret;
 	int idx;
@@ -193,4 +176,82 @@ void PropsPanel::OnBtnRem(wxCommandEvent &event) {
 		MainFrame::instance->level_modified = true;
 		MainFrame::instance->Refresh();
 	}
+}
+
+void PropsPanel::OnBtnDuplicate(wxCommandEvent &event) {
+	int ret;
+	int idx;
+	LEVEL_PROP * p;
+	LEVEL_PROP * pcopy;
+
+	idx = lstProps->GetSelection();
+
+	if(idx == -1 || idx >= (int)level->props->size())
+		return;
+
+	PropDialog dialog(this, wxID_ANY, wxDefaultPosition);
+	p = level->props->at(idx);
+	dialog.SetProp(*p);
+	ret = dialog.ShowModal();
+	if(ret == wxID_OK) {
+		pcopy = new LEVEL_PROP;
+		dialog.GetProp(*pcopy);
+
+		level->props->push_back(pcopy);
+
+		lstProps->Append(wxString::Format(_("size:%dx%d src:%dx%d dst:%dx%d"),
+										  p->src.w, p->src.h,
+										  p->src.x, p->src.y,
+										  p->dst.x, p->dst.y));
+		lstProps->Select(lstProps->GetCount() - 1);
+
+		MainFrame::instance->prop_selected = lstProps->GetSelection();
+		MainFrame::instance->level_modified = true;
+		MainFrame::instance->Refresh();
+	}
+}
+
+void PropsPanel::OnBtnMoveTop(wxCommandEvent &event) {
+	int idx;
+
+	idx = lstProps->GetSelection();
+	MoveTile(idx, 0);
+}
+
+void PropsPanel::OnBtnMoveUp(wxCommandEvent &event) {
+	int idx;
+
+	idx = lstProps->GetSelection();
+	MoveTile(idx, idx - 1);
+}
+
+void PropsPanel::OnBtnMoveDown(wxCommandEvent &event) {
+	int idx;
+
+	idx = lstProps->GetSelection();
+	MoveTile(idx, idx + 1);
+}
+
+void PropsPanel::OnBtnMoveBottom(wxCommandEvent &event) {
+	int idx;
+
+	idx = lstProps->GetSelection();
+	MoveTile(idx, lstProps->GetCount() - 1);
+}
+
+void PropsPanel::MoveTile(int source, int destination) {
+	LEVEL_PROP * p;
+
+	if (source == -1 || destination < 0 || destination >= lstProps->GetCount()) {
+		return;
+	}
+
+	p = level->props->at(source);
+
+	level->props->erase(level->props->begin() + source);
+	level->props->insert(level->props->begin() + destination, p);
+
+	RefreshProps();
+
+	lstProps->Select(destination);
 }

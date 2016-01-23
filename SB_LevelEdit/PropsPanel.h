@@ -18,12 +18,14 @@ protected:
 
 	wxListBox * lstProps;
 	wxButton * btnAdd;
+	wxButton * btnDuplicate;
 	wxButton * btnChg;
 	wxButton * btnRem;
 
 	void OnLstPropSelected(wxCommandEvent &event);
 
 	void OnBtnAdd(wxCommandEvent &event);
+	void OnBtnDuplicate(wxCommandEvent &event);
 	void OnBtnChg(wxCommandEvent &event);
 	void OnBtnRem(wxCommandEvent &event);
 
@@ -32,6 +34,7 @@ protected:
 
 enum {
 	ID_btnAdd = 1,
+	ID_btnDuplicate,
 	ID_btnChg,
 	ID_btnRem
 };

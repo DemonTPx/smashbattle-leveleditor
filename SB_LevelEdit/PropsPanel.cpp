@@ -23,11 +23,13 @@ void PropsPanel::InitializeComponents() {
 	lstProps->Connect(wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler(PropsPanel::OnLstPropSelected));
 
 	btnAdd = new wxButton(this, ID_btnAdd, _("Add"));
+	btnDuplicate = new wxButton(this, ID_btnDuplicate, _("Duplicate"));
 	btnChg = new wxButton(this, ID_btnChg, _("Edit"));
 	btnRem = new wxButton(this, ID_btnRem, _("Delete"));
 
 	wxBoxSizer * toolbar = new wxBoxSizer(wxHORIZONTAL);
 	toolbar->Add(btnAdd, 1, wxEXPAND);
+	toolbar->Add(btnDuplicate, 1, wxEXPAND);
 	toolbar->Add(btnChg, 1, wxEXPAND);
 	toolbar->Add(btnRem, 1, wxEXPAND);
 
@@ -40,6 +42,7 @@ void PropsPanel::InitializeComponents() {
 
 BEGIN_EVENT_TABLE(PropsPanel, wxPanel)
 	EVT_BUTTON(ID_btnAdd, PropsPanel::OnBtnAdd)
+	EVT_BUTTON(ID_btnDuplicate, PropsPanel::OnBtnDuplicate)
 	EVT_BUTTON(ID_btnChg, PropsPanel::OnBtnChg)
 	EVT_BUTTON(ID_btnRem, PropsPanel::OnBtnRem)
 END_EVENT_TABLE()
@@ -103,6 +106,39 @@ void PropsPanel::OnBtnAdd(wxCommandEvent &event) {
 			p->dst.x, p->dst.y));
 		lstProps->Select(lstProps->GetCount() - 1);
 		
+		MainFrame::instance->prop_selected = lstProps->GetSelection();
+		MainFrame::instance->level_modified = true;
+		MainFrame::instance->Refresh();
+	}
+}
+
+void PropsPanel::OnBtnDuplicate(wxCommandEvent &event) {
+	int ret;
+	int idx;
+	LEVEL_PROP * p;
+	LEVEL_PROP * pcopy;
+
+	idx = lstProps->GetSelection();
+
+	if(idx == -1 || idx >= (int)level->props->size())
+		return;
+
+	PropDialog dialog(this, wxID_ANY, wxDefaultPosition);
+	p = level->props->at(idx);
+	dialog.SetProp(*p);
+	ret = dialog.ShowModal();
+	if(ret == wxID_OK) {
+		pcopy = new LEVEL_PROP;
+		dialog.GetProp(*pcopy);
+
+		level->props->push_back(pcopy);
+
+		lstProps->Append(wxString::Format(_("size:%dx%d src:%dx%d dst:%dx%d"),
+										  p->src.w, p->src.h,
+										  p->src.x, p->src.y,
+										  p->dst.x, p->dst.y));
+		lstProps->Select(lstProps->GetCount() - 1);
+
 		MainFrame::instance->prop_selected = lstProps->GetSelection();
 		MainFrame::instance->level_modified = true;
 		MainFrame::instance->Refresh();

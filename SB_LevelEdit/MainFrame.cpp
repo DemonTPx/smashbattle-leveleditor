@@ -245,10 +245,16 @@ void MainFrame::OnDisplayKeyDown(wxKeyEvent &event) {
 	if(sel != -1) {
 		switch(event.GetKeyCode()) {
 			case WXK_LEFT:
+				if (sel % TILE_COLS == 0) {
+					sel += TILE_COLS;
+				}
 				sel--;
 				break;
 			case WXK_RIGHT:
 				sel++;
+				if (sel % TILE_COLS == 0) {
+					sel -= TILE_COLS;
+				}
 				break;
 			case WXK_UP:
 				sel -= TILE_COLS;

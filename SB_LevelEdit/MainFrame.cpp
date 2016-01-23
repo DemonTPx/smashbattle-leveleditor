@@ -812,7 +812,7 @@ void MainFrame::OnToggleProps(wxCommandEvent &event) {
 
 void MainFrame::OnTogglePStarts(wxCommandEvent &event) {
 	MainFrame::instance->show_pstarts = event.IsChecked();
-//	MainFrame::instance->display->Refresh();
+	MainFrame::instance->display->Refresh();
 }
 
 void MainFrame::OnTogglePowerups(wxCommandEvent &event) {

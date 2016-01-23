@@ -74,9 +74,9 @@ void PropsPanel::RefreshProps() {
 	LEVEL_PROP prop;
 	int selected;
 
-	lstProps->Clear();
 	selected = lstProps->GetSelection();
-	
+	lstProps->Clear();
+
 	if(level == 0) {
 		return;
 	}
@@ -252,6 +252,9 @@ void PropsPanel::MoveTile(int source, int destination) {
 	level->props->insert(level->props->begin() + destination, p);
 
 	RefreshProps();
-
 	lstProps->Select(destination);
+
+	MainFrame::instance->prop_selected = destination;
+	MainFrame::instance->level_modified = true;
+	MainFrame::instance->Refresh();
 }
